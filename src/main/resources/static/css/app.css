@@ -49,5 +49,17 @@ label small { font-size: 12px; color: #5A6170; }
 .err { background: #FDECEA; border: 1px solid #E6A19B; color: #8C1D18; border-radius: 8px; padding: 12px 16px; margin-bottom: 18px; }
 .err ul { margin: 0; padding-left: 18px; }
 .warn { background: #FFF4D6; border: 1px solid #E8CF8A; color: #6B4E00; border-radius: 8px; padding: 12px 16px; margin-bottom: 18px; }
-.login { width: 360px; display: flex; flex-direction: column; gap: 14px; }
-@media (max-width: 760px) { .app { flex-direction: column; } .side { width: auto; flex-direction: row; flex-wrap: wrap; } .grid { grid-template-columns: 1fr; } .main { padding: 20px; } }
+.login { width: 360px; max-width: calc(100vw - 32px); display: flex; flex-direction: column; gap: 14px; }
+/* スマホ・狭い画面：メニューを上に横並び、入力欄は1列、ボタンは押しやすく */
+@media (max-width: 760px) {
+  .app { flex-direction: column; }
+  .side { width: auto; flex-direction: row; flex-wrap: wrap; align-items: center; padding: 10px 12px; }
+  .side-title { width: 100%; padding: 4px 10px 8px; }
+  .side-item { padding: 9px 12px; }
+  .side-logout { margin-top: 0; margin-left: auto; }
+  .grid { grid-template-columns: 1fr; }
+  .main { padding: 16px; }
+  h1 { font-size: 19px; }
+  .pad { padding: 16px; }
+  .row > .btn, .row > .btn-sub { flex: 1; text-align: center; }
+}
