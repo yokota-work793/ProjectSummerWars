@@ -9,5 +9,5 @@ jobs:
       - uses: actions/setup-java@v4
         with: { distribution: temurin, java-version: '21' }
       - uses: gradle/actions/setup-gradle@v4
-        with: { gradle-version: '8.10.2' }
-      - run: gradle build --no-daemon
+      # みんなと同じ gradlew でビルドする（Gradle のバージョンは gradle/wrapper/gradle-wrapper.properties）
+      - run: bash gradlew build --no-daemon
