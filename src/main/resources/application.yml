@@ -26,7 +26,7 @@ app:
     # サービスアカウントの鍵ファイル（JSON）の場所。空なら仮データで動く。鍵は Git に入れない
     credentials: ${GOOGLE_CREDENTIALS:}
 server:
-  port: ${PORT:8080}
+  port: ${PORT:5123}  # 8080 は他のアプリで使っているので 5123 にした
 ---
 spring:
   config.activate.on-profile: prod
