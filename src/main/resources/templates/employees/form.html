@@ -54,7 +54,7 @@
       <div class="card table-wrap">
         <table class="table" style="min-width:600px">
           <thead><tr><th>案件</th><th>インセンティブ月額（円）</th><th>参画開始</th><th>参画終了</th></tr></thead>
-          <tbody>
+          <tbody id="history-rows">
           <tr th:each="h, st : *{history}">
             <td><input th:field="*{history[__${st.index}__].project}" placeholder="案件名"></td>
             <td><input th:field="*{history[__${st.index}__].amount}" inputmode="numeric"></td>
@@ -64,7 +64,27 @@
           </tbody>
         </table>
       </div>
-      <p class="muted">行を消すときは案件名を空にして保存します。行が足りないときは保存すると空の行が増えます。</p>
+      <div class="row" style="margin-top:10px">
+        <button type="button" class="btn-outline" id="add-history-row">＋ 行を追加</button>
+        <span class="muted">行を消すときは案件名を空にして保存します。</span>
+      </div>
+      <script>
+        // 「行を追加」：最後の行を複製し、番号（history[0] など）を次の番号に付け替えて空にする（保存は今までどおり）
+        document.getElementById('add-history-row').addEventListener('click', function () {
+          var body = document.getElementById('history-rows');
+          var rows = body.querySelectorAll('tr');
+          if (rows.length === 0) return;
+          var next = rows.length;
+          var row = rows[rows.length - 1].cloneNode(true);
+          row.querySelectorAll('input').forEach(function (input) {
+            input.name = input.name.replace(/history\[\d+\]/, 'history[' + next + ']');
+            input.id = input.id.replace(/history\d+/, 'history' + next);
+            input.value = '';
+          });
+          body.appendChild(row);
+          row.querySelector('input').focus();
+        });
+      </script>
 
       <h2 class="section">勤怠シート</h2>
       <div class="card pad">
