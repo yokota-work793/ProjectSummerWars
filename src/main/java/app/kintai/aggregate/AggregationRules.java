@@ -7,7 +7,7 @@ import app.kintai.attendance.MonthSheet;
 import java.time.DayOfWeek;
 
 /**
- * 集計（計算）ルール。社労士に確認して、ここを直す（テストは AggregationRulesTest）。
+ * 集計（計算）ルール。社労士（もしくは山本さん）に確認して、ここを直す（テストは AggregationRulesTest）。
  * 今は仮ルール：
  *  ・平日：1日の勤務が標準時間を超えた分を「残業」
  *  ・土曜：勤務した時間をすべて「土曜出勤」
