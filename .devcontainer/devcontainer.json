@@ -5,6 +5,6 @@
   "features": {
     "ghcr.io/devcontainers/features/java:1": { "version": "none", "installGradle": "true", "gradleVersion": "8.10.2" }
   },
-  "forwardPorts": [8080],
+  "forwardPorts": [5123],
   "customizations": { "vscode": { "extensions": ["vscjava.vscode-java-pack", "vmware.vscode-spring-boot"] } }
 }
