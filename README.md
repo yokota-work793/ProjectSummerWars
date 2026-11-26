@@ -94,7 +94,7 @@ ProjectSummerWars/
    `Started KintaiApplication` と出たら起動完了です。初回はライブラリのダウンロードで数分かかります。
 
 3. **画面を開く**
-   右下に「ポート 8080 で…」と出たら「ブラウザーで開く」を押します。出ないときは、ターミナルの隣の「ポート」タブで 8080 の地球マークを押します。
+   右下に「ポート 5123 で…」と出たら「ブラウザーで開く」を押します。出ないときは、ターミナルの隣の「ポート」タブで 5123 の地球マークを押します。
 
 4. **ログインする**
    ユーザー名は `yamamoto`、パスワードは `change-me` です。
@@ -115,7 +115,7 @@ ProjectSummerWars/
 
 ## 動かす（Codespaces・自分のPC）
 ```
-gradle bootRun            # http://localhost:8080 （ユーザー名 yamamoto ／ パスワード change-me）
+gradle bootRun            # http://localhost:5123 （ユーザー名 yamamoto ／ パスワード change-me）
 gradle test               # テスト
 ```
 何も設定しなければ、DB はファイル（./data）、Google は仮データで動く。
