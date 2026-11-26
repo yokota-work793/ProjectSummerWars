@@ -21,6 +21,7 @@
 ProjectSummerWars/
 ├─ README.md ・・・・・・・・・・ このファイル（全員）
 ├─ build.gradle / settings.gradle ・ ビルド設定（全員・変えるときは相談）
+├─ gradlew / gradlew.bat / gradle/wrapper/ ・ Gradle を自動で用意するもの（触らない）
 ├─ .gitignore ・・・・・・・・・・ Git に入れないファイル（鍵・.env）
 ├─ .devcontainer/devcontainer.json ・ Codespaces の開発環境
 ├─ .github/workflows/build.yml ・・ push するとビルドとテストが自動で動く
@@ -82,43 +83,47 @@ ProjectSummerWars/
       └─ ScreensTest.java ・・・・・・・・・ 【指輪】画面の流れ
 ```
 
-## 管理画面の開き方
-1. **Codespaces を開く**
-   GitHub のリポジトリ画面で、緑の「Code」→「Codespaces」タブを押します。前に作ったものがあればそれを選び、なければ「Create codespace on main」を押します。最初の起動は数分かかります。
+## 管理画面の開き方（自分のPC・おすすめ）
+重い・無料枠が減る Codespaces より、自分のPCで動かすのがおすすめ。どちらでも、最新は GitHub（main）から `git pull` で取ってくる。
 
-2. **アプリを起動する**
-   画面下のターミナルで次を実行します。
+### 最初の1回だけ
+1. **Java 21 と Git を入れる**
+   - Windows（PowerShell）：
+     ```
+     winget install EclipseAdoptium.Temurin.21.JDK
+     winget install Git.Git
+     ```
+   - Mac：`brew install --cask temurin@21` と `brew install git`
+   - 入れたら PowerShell（ターミナル）を開き直し、`java -version` で `21` と出ればOK
+   - **Gradle は入れなくてよい**（`gradlew` が自動で用意する）
+2. **コードを取ってくる**（好きなフォルダで）
    ```
-   gradle bootRun
+   git clone https://github.com/yokota-work793/ProjectSummerWars.git
+   cd ProjectSummerWars
    ```
-   `Started KintaiApplication` と出たら起動完了です。初回はライブラリのダウンロードで数分かかります。
 
-3. **画面を開く**
-   右下に「ポート 5123 で…」と出たら「ブラウザーで開く」を押します。出ないときは、ターミナルの隣の「ポート」タブで 5123 の地球マークを押します。
-
-4. **ログインする**
-   ユーザー名は `yamamoto`、パスワードは `change-me` です。
-
-**見られる画面**
-- **社員管理**：一覧、登録、詳細
-- **月次集計**：シート作成、集計、CSV ダウンロード
-- **設定**：ひな型・フォームの URL など
-
-**注意**
-- Google の鍵を入れていないので、勤怠シートは仮データ（平日 9:30〜18:30）で動きます。本物の Google には何も書き込まれません。
-- 画面で登録したデータは、その Codespace の中にだけ保存されます。GitHub のコードには影響しません。
-- ターミナルに `git commit` や `git push` を打たなければ、リポジトリは何も変わりません。
-
-**終わったら**
-1. ターミナルで `Ctrl + C` を押してアプリを止めます。
-2. Codespace 自体も止めます。左下の「Codespaces」から「Stop Current Codespace」を選ぶか、github.com/codespaces で「…」→「Stop codespace」を押します。止めないと無料枠が減ります。
-
-## 動かす（Codespaces・自分のPC）
+### 毎回
 ```
-gradle bootRun            # http://localhost:5123 （ユーザー名 yamamoto ／ パスワード change-me）
-gradle test               # テスト
+git pull                   # 作業前に必ず最新にする
+.\gradlew bootRun          # Windows
+bash gradlew bootRun       # Mac・Linux・Codespaces
 ```
-何も設定しなければ、DB はファイル（./data）、Google は仮データで動く。
+1. `Started KintaiApplication` と出たら、ブラウザで **http://localhost:5123** を開く（初回は Gradle とライブラリのダウンロードで数分かかる）
+2. ユーザー名 `yamamoto`、パスワード `change-me` でログイン
+3. 終わったらターミナルで `Ctrl + C`
+
+テストは `.\gradlew test`（Mac は `bash gradlew test`）。
+
+### 注意
+- Google の鍵を入れていないので、勤怠シートは仮データ（平日 9:30〜18:30）で動く。本物の Google には何も書き込まない
+- 画面で登録したデータは自分のPCの `data` フォルダだけに保存され、Git には入らない。消したいときはアプリを止めてから `data` フォルダを消す
+- 5123 が使用中のときは別の番号で起動できる：Windows `$env:PORT=5124; .\gradlew bootRun`／Mac `PORT=5124 bash gradlew bootRun`
+
+### Codespaces で開く場合（PCに入れられないとき）
+1. 緑の「Code」→「Codespaces」→ 作成または既存を選ぶ
+2. ターミナルで `git pull` → `bash gradlew bootRun`
+3. 「ポート」タブの 5123 を開く。「One second…」で止まったら、URL の最後に `/login` を付けて開き直す
+4. 終わったら `Ctrl + C`、Codespace も停止（止めないと無料枠が減る）
 
 ## Git の使い方（ぶつからないように）
 1. 作業を始める前に `git pull`
