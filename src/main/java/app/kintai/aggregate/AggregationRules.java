@@ -1,10 +1,10 @@
 // 担当：横田さん（集計ルール）。変更する前に同じフォルダか担当フォルダの README.md を読み、担当外の人は担当者に相談する
 package app.kintai.aggregate;
 
+import java.time.DayOfWeek;
+
 import app.kintai.attendance.DayRecord;
 import app.kintai.attendance.MonthSheet;
-
-import java.time.DayOfWeek;
 
 /**
  * 集計（計算）ルール。社労士（もしくは山本さん）に確認して、ここを直す（テストは AggregationRulesTest）。
@@ -46,3 +46,5 @@ public final class AggregationRules {
 
     private static int overlap(int a1, int a2, int b1, int b2) { return Math.max(0, Math.min(a2, b2) - Math.max(a1, b1)); }
 }
+
+//コミットのテスト
