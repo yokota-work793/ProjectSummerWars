@@ -1,13 +1,14 @@
 # 勤怠・給与集計システム
 
-社員管理・月次集計・交通費/経費フォームの取り込み・社労士へのCSV送付を、1つの Java（Spring Boot）の画面で行う。
+社員管理・月次集計・交通費/経費フォームの取り込み・社労士へのCSV送付を行う社内システム。
+**画面は React（`frontend/`）、データと計算は Java（Spring Boot の API・`src/`）。** 画面は API（`/api/...`）を呼ぶだけで、計算や判断は Java に書く。
 給与計算そのものは社労士が行う。このシステムは、社労士に渡すデータ（1人×1か月）を正しく集めてまとめる。
 **Java 版はまだ構築中。** GAS 版は 2026-11-26 に停止済み（トリガー削除・デプロイのアーカイブ・メニュー非表示。社員管理表は「旧_社員管理表」として残してある）。
 
 ## 分担（だれが・何を）
 | 人 | 担当 | 担当フォルダ・ファイル | まずやること |
 |---|---|---|---|
-| 指輪 | 画面・設定・全体のまとめ | `src/main/resources/templates/`、`src/main/resources/static/`、`src/main/java/app/kintai/settings/`、`config/HomeController.java`、`src/test/java/app/kintai/ScreensTest.java` | 全体の調整及びシステムの土台を作成 |
+| 指輪 | 画面・設定・全体のまとめ | `frontend/`（React の画面すべて）、`src/main/java/app/kintai/settings/`、`config/HomeController.java`、`src/test/java/app/kintai/ScreensTest.java` | 全体の調整及びシステムの土台を作成 |
 | 横田 | 勤怠シートの読み取り・**集計ルール** | `src/main/java/app/kintai/attendance/`、`aggregate/`、それぞれのテスト | 社労士に集計ルールを確認し、テスト→AggregationRules の順で直す |
 | 山川 | 月次集計・交通費経費・ログイン・DB | `src/main/java/app/kintai/monthly/`、`expense/`、`config/SecurityConfig.java`、`src/main/resources/db/migration/`、それぞれのテスト | 社労士が読める CSV の形を確認し、MonthlyColumns を合わせる |
 | 宮谷 | 社員管理・Google 連携 | `src/main/java/app/kintai/employee/`、`google/`、そのテスト | サービスアカウントを作り、本物の Google で登録〜共有を確かめる |
@@ -25,6 +26,12 @@ ProjectSummerWars/
 ├─ .gitignore ・・・・・・・・・・ Git に入れないファイル（鍵・.env）
 ├─ .devcontainer/devcontainer.json ・ Codespaces の開発環境
 ├─ .github/workflows/build.yml ・・ push するとビルドとテストが自動で動く
+├─ frontend/ ・・・・・・・・・・ 【指輪】画面（React + Vite）。詳しくは frontend/README.md
+│  ├─ src/pages/ ・・・・・・・ 画面ごとのファイル（Login・EmployeeList・EmployeeForm・Monthly・Settings）
+│  ├─ src/api.js ・・・・・・・ Java の API を呼ぶ窓口
+│  ├─ src/Layout.jsx ・・・・ 左メニュー・お知らせ表示
+│  ├─ src/app.css ・・・・・・ 見た目
+│  └─ vite.config.js ・・・・ 画面は 5123、/api は 5124 の Java へ
 └─ src/
    ├─ main/java/app/kintai/
    │  ├─ KintaiApplication.java ・・ 起動クラス（全員・触らない）
@@ -41,7 +48,7 @@ ProjectSummerWars/
    │  │   ├─ EmployeeRepository.java ・ 社員の検索
    │  │   ├─ EmployeeForm.java ・・・ 画面の入力とチェック
    │  │   ├─ EmployeeService.java ・ 登録・変更・削除・勤怠シート作成・共有
-   │  │   ├─ EmployeeController.java ・ 画面「社員管理」(/employees)
+   │  │   ├─ EmployeeController.java ・ 社員管理の API（/api/employees）
    │  │   └─ EmployeeImport.java ・・ GAS版社員管理表の読み込み
    │  ├─ google/ ・・・・・・・・・ 【宮谷】Google の窓口
    │  │   ├─ GoogleWorkspace.java ・ できること一覧
@@ -50,7 +57,7 @@ ProjectSummerWars/
    │  │   └─ GoogleConfig.java ・・・ 本物か仮かの切り替え
    │  ├─ monthly/ ・・・・・・・・ 【山川】月次集計・社労士への送付
    │  │   ├─ MonthlyService.java ・・ 集計の流れ・確定・CSV・メール
-   │  │   ├─ MonthlyController.java ・ 画面「月次集計」(/monthly)
+   │  │   ├─ MonthlyController.java ・ 月次集計の API（/api/monthly）
    │  │   ├─ MonthlyRecord.java / MonthlyRecordRepository.java ・ 月次集計の表
    │  │   ├─ MonthlyColumns.java ・・ 画面とCSVの列
    │  │   └─ CsvExporter.java ・・・ CSV にする
@@ -59,59 +66,68 @@ ProjectSummerWars/
    │  │   └─ ExpenseService.java ・・ 回答シートを読む
    │  ├─ config/
    │  │   ├─ SecurityConfig.java ・・ 【山川】ログイン
-   │  │   └─ HomeController.java ・・ 【指輪】トップ・ログイン画面
+   │  │   └─ HomeController.java ・・ 【指輪】画面の URL に React を返す・/api/me
    │  ├─ settings/ ・・・・・・・・ 【指輪】画面「設定」
    │  │   ├─ AppSettings.java ・・・ 設定の読み書き
-   │  │   └─ SettingsController.java ・ 画面「設定」・GAS版からの取り込み
-   │  └─ common/ ・・・・・・・・・ 【全員】共通部品（TimeText・Ids・例外）
+   │  │   └─ SettingsController.java ・ 設定の API・GAS版からの取り込み
+   │  └─ common/ ・・・・・・・・・ 【全員】共通部品（TimeText・Ids・例外・API のエラーの形）
    ├─ main/resources/
    │  ├─ application.yml ・・・・・ 【全員】アプリの設定
-   │  ├─ db/migration/ ・・・・・・ 【山川】DB の表（V1〜V3。足すときは V4__）
-   │  ├─ templates/ ・・・・・・・ 【指輪】画面（Thymeleaf）
-   │  │   ├─ fragments/layout.html ・ 共通の枠・メニュー
-   │  │   ├─ login.html ・・・・・ ログイン
-   │  │   ├─ employees/list.html・form.html ・ 社員一覧・登録
-   │  │   ├─ monthly/index.html ・ 月次集計
-   │  │   └─ settings/index.html ・ 設定
-   │  └─ static/css/app.css ・・・ 【指輪】見た目
+   │  └─ db/migration/ ・・・・・・ 【山川】DB の表（V1〜V3。足すときは V4__）
    └─ test/java/app/kintai/
       ├─ aggregate/AggregationRulesTest.java ・ 【横田】
       ├─ attendance/MonthSheetParserTest.java ・ 【横田】
       ├─ employee/EmployeeImportTest.java ・・ 【宮谷】
       ├─ expense/ExpenseTotalsTest.java ・・・ 【山川】
       ├─ monthly/CsvExporterTest.java ・・・・ 【山川】
-      └─ ScreensTest.java ・・・・・・・・・ 【指輪】画面の流れ
+      └─ ScreensTest.java ・・・・・・・・・ 【指輪】API の流れ（ログイン→登録→集計→CSV）
 ```
 
 ## 管理画面の開き方（自分のPC・おすすめ）
 重い・無料枠が減る Codespaces より、自分のPCで動かすのがおすすめ。どちらでも、最新は GitHub（main）から `git pull` で取ってくる。
+**ターミナルを2つ使う**：1つ目で Java（API・5124）、2つ目で React（画面・5123）を動かし、ブラウザは **http://localhost:5123** を開く。
 
 ### 最初の1回だけ
-1. **Java 21 と Git を入れる**
+1. **Java 21・Node.js・Git を入れる**
    - Windows（PowerShell）：
      ```
      winget install EclipseAdoptium.Temurin.21.JDK
+     winget install OpenJS.NodeJS.LTS
      winget install Git.Git
      ```
-   - Mac：`brew install --cask temurin@21` と `brew install git`
-   - 入れたら PowerShell（ターミナル）を開き直し、`java -version` で `21` と出ればOK
+   - Mac：`brew install --cask temurin@21` と `brew install node git`
+   - 入れたら PowerShell（ターミナル）を全部閉じて開き直し、`java -version` で `21`、`node -v` で `v20` 以上が出ればOK
    - **Gradle は入れなくてよい**（`gradlew` が自動で用意する）
 2. **コードを取ってくる**（好きなフォルダで）
    ```
    git clone https://github.com/yokota-work793/ProjectSummerWars.git
    cd ProjectSummerWars
    ```
+3. **画面の部品を入れる**（`frontend/package.json` が変わったときも、もう一度）
+   ```
+   cd frontend
+   npm install
+   cd ..
+   ```
 
 ### 毎回
+**ターミナル1（Java・API）**
 ```
 git pull                   # 作業前に必ず最新にする
-.\gradlew bootRun          # Windows
-bash gradlew bootRun       # Mac・Linux・Codespaces
+.\gradlew bootRun          # Windows（Mac・Linux は bash gradlew bootRun）
 ```
-1. `Started KintaiApplication` と出たら、ブラウザで **http://localhost:5123** を開く（初回は Gradle とライブラリのダウンロードで数分かかる）
-2. ユーザー名 `demo`、パスワード `1111` でログイン（開発用。本番では環境変数で変える）
-3. 終わったらターミナルで `Ctrl + C`
+`Started KintaiApplication` が出るまで待つ（初回は数分）。
 
+**ターミナル2（React・画面）**
+```
+cd frontend
+npm run dev
+```
+1. ブラウザで **http://localhost:5123** を開く
+2. ユーザー名 `demo`、パスワード `1111` でログイン（開発用。本番では環境変数で変える）
+3. 終わったら、両方のターミナルで `Ctrl + C`
+
+画面のファイル（`frontend/src/...`）を保存すると、ブラウザがすぐ変わる。Java のファイルを変えたときは、ターミナル1を `Ctrl + C` して起動し直す。
 テストは `.\gradlew test`（Mac は `bash gradlew test`）。
 
 ### うまくいかないとき
@@ -121,18 +137,22 @@ bash gradlew bootRun       # Mac・Linux・Codespaces
   $env:JAVA_HOME = (Get-ChildItem "C:\Program Files\Eclipse Adoptium" -Directory | Select-Object -First 1).FullName
   $env:Path = "$env:JAVA_HOME\bin;$env:Path"
   ```
-- **ログインできない**：`git pull` してから起動し直す（古い版は yamamoto / change-me）
-- **localhost:5123 が開かない**：PowerShell に `Started KintaiApplication` が出ているか確認。出ていなければまだ起動中か、エラーで止まっている
+- **`npm` が見つからない**：Node.js を入れて PowerShell を開き直す。`npm` で「スクリプトの実行が無効」と出たら `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` を1回実行
+- **画面は出るがログインできない／「エラーが起きました」と出る**：ターミナル1（Java）が動いているか確認。止まっていると画面から API が呼べない
+- **localhost:5123 が開かない**：ターミナル2で `npm run dev` が動いているか確認
 
 ### 注意
 - Google の鍵を入れていないので、勤怠シートは仮データ（平日 9:30〜18:30）で動く。本物の Google には何も書き込まない
-- 画面で登録したデータは自分のPCの `data` フォルダだけに保存され、Git には入らない。消したいときはアプリを止めてから `data` フォルダを消す
-- 5123 が使用中のときは別の番号で起動できる：Windows `$env:PORT=5124; .\gradlew bootRun`／Mac `PORT=5124 bash gradlew bootRun`
+- 画面で登録したデータは自分のPCの `data` フォルダだけに保存され、Git には入らない。消したいときは Java を止めてから `data` フォルダを消す
+- `frontend/node_modules` と `src/main/resources/static`（React をビルドしたもの）は Git に入れない
+
+### 本番用に1つにまとめるとき
+`cd frontend` → `npm run build` で React が `src/main/resources/static` に入り、Java だけ（5124）で画面も API も出せる。本番の出し方は決まってから決める。
 
 ### Codespaces で開く場合（PCに入れられないとき）
 1. 緑の「Code」→「Codespaces」→ 作成または既存を選ぶ
-2. ターミナルで `git pull` → `bash gradlew bootRun`
-3. 「ポート」タブの 5123 を開く。「One second…」で止まったら、URL の最後に `/login` を付けて開き直す
+2. ターミナル1で `git pull` → `bash gradlew bootRun`、ターミナル2で `cd frontend && npm install && npm run dev`
+3. 「ポート」タブの 5123 を開く
 4. 終わったら `Ctrl + C`、Codespace も停止（止めないと無料枠が減る）
 
 ## Git の使い方（ぶつからないように）

@@ -10,3 +10,7 @@ data/
 # Google の鍵ファイルは絶対に入れない
 *credentials*.json
 service-account*.json
+# React（frontend）の部品とビルド結果
+frontend/node_modules/
+frontend/dist/
+src/main/resources/static/
