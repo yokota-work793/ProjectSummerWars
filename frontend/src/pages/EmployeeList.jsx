@@ -4,7 +4,6 @@ import { Link, useLocation } from 'react-router-dom'
 import { api } from '../api.js'
 import { Flash } from '../Layout.jsx'
 
-const yen = (n) => (n ?? 0).toLocaleString('ja-JP') + '円'
 const shareTag = (s) => (s === '共有済み' ? 'ok' : s === '入社日に共有予定' ? 'wait' : 'gray')
 
 export default function EmployeeList() {
@@ -34,16 +33,15 @@ export default function EmployeeList() {
       </form>
       <div className="card table-wrap">
         <table className="table">
-          <thead><tr><th>社員番号</th><th>氏名</th><th>所属</th><th>雇用形態</th><th>入社日</th><th>在籍</th><th>住宅手当</th><th>勤怠シート</th><th></th></tr></thead>
+          <thead><tr><th>社員番号</th><th>氏名</th><th>所属</th><th>雇用形態</th><th>入社日</th><th>在籍</th><th>勤怠シート</th><th></th></tr></thead>
           <tbody>
-            {list === null && <tr><td colSpan={9} className="muted">読み込み中…</td></tr>}
-            {list?.length === 0 && <tr><td colSpan={9} className="muted">該当する社員はいません。</td></tr>}
+            {list === null && <tr><td colSpan={8} className="muted">読み込み中…</td></tr>}
+            {list?.length === 0 && <tr><td colSpan={8} className="muted">該当する社員はいません。</td></tr>}
             {list?.map((e) => (
               <tr key={e.employeeNo}>
                 <td>{e.employeeNo}</td><td className="strong">{e.name}</td><td>{e.department}</td>
                 <td>{e.employmentType}</td><td>{e.joinedOn}</td>
                 <td><span className={'tag ' + (e.status === '休職' ? 'wait' : 'ok')}>{e.status}</span></td>
-                <td>{yen(e.housingAllowance)}</td>
                 <td><span className={'tag ' + shareTag(e.shareState)}>{e.shareState}</span></td>
                 <td><Link className="btn-outline" to={`/employees/${encodeURIComponent(e.employeeNo)}`}>詳細</Link></td>
               </tr>
