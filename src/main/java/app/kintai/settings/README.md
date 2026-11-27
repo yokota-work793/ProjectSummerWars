@@ -5,11 +5,11 @@ URL やメールアドレスをコードに書かず、画面から変えられ�
 | ファイル | 中身 |
 |---|---|
 | AppSettings | 設定の読み書き（キーの一覧もここ） |
-| SettingsController | 画面「設定」（/settings）、GAS版からの取り込み（/settings/import） |
+| SettingsController | 設定の API（/api/settings）、GAS版からの取り込み（/api/settings/import）。画面は frontend/src/pages/Settings.jsx |
 
 ## やること
 - [ ] 本番の値（ひな型・フォルダ・フォーム・社労士のメール）を入れる
-- [ ] 設定を足すときは、AppSettings にキーを足し、templates/settings/index.html に入力欄を足す
+- [ ] 設定を足すときは、AppSettings にキーを足し、frontend/src/pages/Settings.jsx に入力欄を足す
 
 
 ## 担当内容（指輪）
@@ -21,7 +21,7 @@ URL やメールアドレスをコードに書かず、画面から変えられ�
 AI（Claude など）に作業を頼むときは、下をそのまま貼り、「今回やりたいこと」だけ書き換えてください。
 
 ```
-あなたは「勤怠・給与集計システム」（GitHub: yokota-work793/ProjectSummerWars。Java 21 / Spring Boot 3 / Thymeleaf / Flyway / Gradle）の開発を手伝うアシスタントです。
+あなたは「勤怠・給与集計システム」（GitHub: yokota-work793/ProjectSummerWars。Java 21 / Spring Boot 3（API） / React + Vite（画面・frontend/） / Flyway / Gradle）の開発を手伝うアシスタントです。
 私は指輪で、担当は「設定画面」です。
 
 # 今回やりたいこと
@@ -29,8 +29,7 @@ AI（Claude など）に作業を頼むときは、下をそのまま貼り、�
 
 # 必ず守ること
 - 変更してよいのは、私の担当範囲の次のファイル・フォルダだけです：
-  - src/main/resources/templates/
-  - src/main/resources/static/
+  - frontend/
   - src/main/java/app/kintai/settings/
   - src/main/java/app/kintai/config/HomeController.java
   - src/test/java/app/kintai/ScreensTest.java
