@@ -5,43 +5,68 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-/** 画面が開けること・登録から月次集計までの流れ（Google は仮データ） */
+/** 画面（React）が使う API の流れ：ログイン → 社員登録 → 月次集計 → CSV（Google は仮データ） */
 @SpringBootTest(properties = "spring.datasource.url=jdbc:h2:mem:test;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH")
 @AutoConfigureMockMvc
 class ScreensTest {
     @Autowired MockMvc mvc;
 
     @Test
-    void ログインしていなければログイン画面へ() throws Exception {
-        mvc.perform(get("/employees")).andExpect(status().is3xxRedirection());
+    void ログインしていなければ401() throws Exception {
+        mvc.perform(get("/api/employees")).andExpect(status().isUnauthorized());
+        mvc.perform(get("/api/me")).andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void 開発用のユーザーでログインできる() throws Exception {
+        mvc.perform(post("/api/login").with(csrf()).param("username", "demo").param("password", "1111"))
+                .andExpect(status().isOk());
+        mvc.perform(post("/api/login").with(csrf()).param("username", "demo").param("password", "xxxx"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser
+    void 入力が足りないと400と入力欄ごとのエラー() throws Exception {
+        mvc.perform(post("/api/employees").with(csrf()).contentType(MediaType.APPLICATION_JSON).content("{\"no\":\"\"}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors.name").exists());
     }
 
     @Test
     @WithMockUser
     void 社員を登録して月次集計まで() throws Exception {
-        mvc.perform(get("/employees")).andExpect(status().isOk());
-        mvc.perform(get("/employees/new")).andExpect(status().isOk());
-        mvc.perform(post("/settings").with(csrf()).param("TEMPLATE_SHEET_URL", "https://docs.google.com/spreadsheets/d/TEMPLATE00000000000000000000000/edit"))
-                .andExpect(status().is3xxRedirection());
-        mvc.perform(post("/employees/new").with(csrf())
-                        .param("no", "E0001").param("name", "山田 太郎").param("mail", "taro@example.com")
-                        .param("joined", "2025-04-01").param("type", "正社員").param("status", "在籍").param("payType", "月給")
-                        .param("base", "250000").param("stdTime", "8:00").param("commute", "10000").param("housing", "10000").param("fixed", "0")
-                        .param("history[0].project", "案件A").param("history[0].amount", "30000"))
-                .andExpect(status().is3xxRedirection());
-        mvc.perform(get("/employees/E0001")).andExpect(status().isOk());
-        mvc.perform(post("/monthly/sheets").with(csrf()).param("ym", "2026-12")).andExpect(status().is3xxRedirection());
-        mvc.perform(post("/monthly/collect").with(csrf()).param("ym", "2026-12")).andExpect(status().is3xxRedirection());
-        mvc.perform(get("/monthly").param("ym", "2026-12")).andExpect(status().isOk())
-                .andExpect(content().string(org.hamcrest.Matchers.containsString("山田 太郎")));
-        mvc.perform(get("/monthly/csv").param("ym", "2026-12")).andExpect(status().isOk());
-        mvc.perform(get("/settings")).andExpect(status().isOk());
+        mvc.perform(get("/api/me")).andExpect(status().isOk());
+        mvc.perform(get("/api/employees")).andExpect(status().isOk());
+        mvc.perform(get("/api/employees/new")).andExpect(status().isOk()).andExpect(jsonPath("$.housingNote").exists());
+        mvc.perform(put("/api/settings").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"TEMPLATE_SHEET_URL\":\"https://docs.google.com/spreadsheets/d/TEMPLATE00000000000000000000000/edit\"}"))
+                .andExpect(status().isOk());
+        String body = """
+                {"no":"E0001","name":"山田 太郎","mail":"taro@example.com","joined":"2025-04-01","type":"正社員","status":"在籍",
+                 "payType":"月給","base":250000,"stdTime":"8:00","commute":10000,"housing":10000,"fixed":0,
+                 "history":[{"project":"案件A","amount":30000,"from":null,"to":null}]}
+                """;
+        mvc.perform(post("/api/employees").with(csrf()).contentType(MediaType.APPLICATION_JSON).content(body))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.message").exists());
+        mvc.perform(post("/api/employees").with(csrf()).contentType(MediaType.APPLICATION_JSON).content(body))
+                .andExpect(status().isBadRequest()).andExpect(jsonPath("$.errors.no").exists());
+        mvc.perform(get("/api/employees/E0001")).andExpect(status().isOk())
+                .andExpect(jsonPath("$.form.name").value("山田 太郎"));
+        mvc.perform(post("/api/monthly/sheets").with(csrf()).param("ym", "2026-12")).andExpect(status().isOk());
+        mvc.perform(post("/api/monthly/collect").with(csrf()).param("ym", "2026-12")).andExpect(status().isOk());
+        mvc.perform(get("/api/monthly").param("ym", "2026-12")).andExpect(status().isOk())
+                .andExpect(content().string(containsString("山田 太郎")));
+        mvc.perform(get("/api/monthly/csv").param("ym", "2026-12")).andExpect(status().isOk());
+        mvc.perform(get("/api/settings")).andExpect(status().isOk());
     }
 }
