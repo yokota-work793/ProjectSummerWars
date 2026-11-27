@@ -27,6 +27,15 @@
 - このフォルダのファイルを変えたら、対応するテストも足す
 - 他の人の担当フォルダを変えたいときは、自分で直さずに担当者へ伝える（Issue か Pull Request に名前を書く）
 
+## 作業のしかた（画面が React になってから）
+- 画面は `frontend/`（React・指輪）にある。このフォルダは Java 側で、画面の HTML はもう Java にはない（Thymeleaf は廃止）
+- 動かす：Java（5124）を Eclipse（KintaiApplication を「実行」）か `.\gradlew bootRun` で起動 → 別のターミナルで `cd frontend` → `npm run dev` → ブラウザで http://localhost:5123（`demo` / `1111`）
+- Java を変えたら：Java を止めて起動し直す → ブラウザを F5。テストは Eclipse でテストファイルを右クリック →「JUnit テスト」か `.\gradlew test`
+- 作業前に `git pull`。手順の詳細（Eclipse のつなげ方・更新のしかた）はルートの README.md
+- API は EmployeeController（/api/employees）。画面は frontend/src/pages/EmployeeList.jsx・EmployeeForm.jsx（指輪）
+- EmployeeForm の項目名・チェックの文言は、そのまま画面の入力欄の下に出る。**項目を足す・名前を変えるときは指輪に伝える**（React 側も直す必要がある）
+- API の返す形（Summary・Detail）を変えるときも指輪に伝える
+
 ## AIへの指示プロンプト（コピーして使う）
 AI（Claude など）に作業を頼むときは、下をそのまま貼り、「今回やりたいこと」だけ書き換えてください。
 
