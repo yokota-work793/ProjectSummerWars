@@ -9,7 +9,7 @@
 | expense/ExpenseTotalsTest | 交通費・経費の合計 | 山川 |
 | monthly/CsvExporterTest | CSV の形 | 山川 |
 | employee/EmployeeImportTest | GAS版からの取り込み | 宮谷 |
-| ScreensTest | 画面の流れ（ログイン → 登録 → 集計 → CSV） | 指輪 |
+| ScreensTest | 画面（React）が使う API の流れ（ログイン → 登録 → 集計 → CSV） | 指輪 |
 
 ## 担当内容（全員）
 - 自分の機能を足したり直したりしたら、自分の担当のテストを足す
