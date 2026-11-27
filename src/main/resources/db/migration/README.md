@@ -19,9 +19,9 @@ Flyway が、起動のときに V1 → V2 → … の順に1回だけ実行す�
 
 ## 作業のしかた（画面が React になってから）
 - 画面は `frontend/`（React・指輪）。DB の表を変えても、画面に出すには API（各担当の Controller）と React の変更が要る
-- 動かす：Java（5124）を Eclipse（KintaiApplication を「実行」）か `.\gradlew bootRun` で起動 → 別のターミナルで `cd frontend` → `npm run dev` → ブラウザで http://localhost:5123（`demo` / `1111`）
+- 動かす：ターミナル1で `cd ~\ProjectSummerWars` → `git pull` → `.\gradlew bootRun`（Eclipse なら KintaiApplication を「実行」）、ターミナル2で `cd ~\ProjectSummerWars\frontend` → `npm install` → `npm run dev` → ブラウザで http://localhost:5123（`demo` / `1111`）。`80% EXECUTING` で止まって見えれば起動成功
 - Java を変えたら：Java を止めて起動し直す → ブラウザを F5。テストは Eclipse でテストファイルを右クリック →「JUnit テスト」か `.\gradlew test`
-- 作業前に `git pull`。手順の詳細（Eclipse のつなげ方・更新のしかた）はルートの README.md
+- 手順の詳細・エラーが出たとき・Eclipse はルートの README.md
 - 新しい V〇__ を足したら Java を起動し直すと自動で表が変わる。起動でエラーなら Java を止めて `data` フォルダを消して起動し直す（自分のPCの登録データは消える）
 - 既にある V1〜V3 は絶対に書き換えない（みんなの PC と本番で起動できなくなる）
 
