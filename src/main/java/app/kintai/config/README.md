@@ -15,8 +15,16 @@
 - 指輪：HomeController（トップ画面の行き先を変えるとき）
 - 他の人の担当ファイルを変えたいときは、自分で直さずに担当者へ伝える（Issue か Pull Request に名前を書く）
 
+## 作業のしかた（画面が React になってから）
+- 画面は `frontend/`（React・指輪）。ログイン画面も React（frontend/src/pages/Login.jsx）で、Java はログインの受付（POST /api/login）だけ
+- 動かす：Java（5124）を Eclipse（KintaiApplication を「実行」）か `.\gradlew bootRun` で起動 → 別のターミナルで `cd frontend` → `npm run dev` → ブラウザで http://localhost:5123（`demo` / `1111`）
+- Java を変えたら：Java を止めて起動し直す → ブラウザを F5。テストは Eclipse でテストファイルを右クリック →「JUnit テスト」か `.\gradlew test`
+- 作業前に `git pull`。手順の詳細（Eclipse のつなげ方・更新のしかた）はルートの README.md
+- SecurityConfig（山川さん）：ログインの URL・Cookie の名前（XSRF-TOKEN）を変えるときは、指輪（frontend/src/api.js）に必ず伝える。変えると画面からログインできなくなる
+- HomeController（指輪）：React の画面の URL を足したら、ここの一覧にも足す（足さないと、その URL を直接開いたり F5 したとき 404 になる）
+
 ## AIへの指示プロンプト（山川さん用。コピーして使う）
-AI（Claude など）に作業を頼むときは、下をそのまま貼り、「今回やりたいこと」だけ書き換えてください。指輪は templates/README.md のプロンプトを使う。
+AI（Claude など）に作業を頼むときは、下をそのまま貼り、「今回やりたいこと」だけ書き換えてください。指輪は frontend/README.md のプロンプトを使う。
 
 ```
 あなたは「勤怠・給与集計システム」（GitHub: yokota-work793/ProjectSummerWars。Java 21 / Spring Boot 3（API） / React + Vite（画面・frontend/） / Flyway / Gradle）の開発を手伝うアシスタントです。
