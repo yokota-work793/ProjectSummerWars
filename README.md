@@ -31,7 +31,7 @@ ProjectSummerWars/
 │  ├─ src/api.js ・・・・・・・ Java の API を呼ぶ窓口
 │  ├─ src/Layout.jsx ・・・・ 左メニュー・お知らせ表示
 │  ├─ src/app.css ・・・・・・ 見た目
-│  └─ vite.config.js ・・・・ 画面は 5123、/api は 5124 の Java へ中継（つながりは下の「5123 と 5124 のつながり」）
+│  └─ vite.config.js ・・・・ 画面は 5123、/api は 5124 の Java へ中継（つながりは下の「全体のイメージ」）
 └─ src/
    ├─ main/java/app/kintai/
    │  ├─ KintaiApplication.java ・・ 起動クラス（全員・触らない）
@@ -83,135 +83,149 @@ ProjectSummerWars/
       └─ ScreensTest.java ・・・・・・・・・ 【指輪】API の流れ（ログイン→登録→集計→CSV）
 ```
 
-## 管理画面の開き方（自分のPC・おすすめ）
-重い・無料枠が減る Codespaces より、自分のPCで動かすのがおすすめ。どちらでも、最新は GitHub（main）から `git pull` で取ってくる。
-**ターミナルを2つ使う**：1つ目で Java（API・5124）、2つ目で React（画面・5123）を動かし、ブラウザは **http://localhost:5123** を開く。
+## 管理画面の開き方（自分のPC）
 
-### 最初の1回だけ
-1. **Java 21・Node.js・Git を入れる**
-   - Windows（PowerShell）：
-     ```
-     winget install EclipseAdoptium.Temurin.21.JDK
-     winget install OpenJS.NodeJS.LTS
-     winget install Git.Git
-     ```
-   - Mac：`brew install --cask temurin@21` と `brew install node git`
-   - 入れたら PowerShell（ターミナル）を全部閉じて開き直し、`java -version` で `21`、`node -v` で `v20` 以上が出ればOK
-   - **Gradle は入れなくてよい**（`gradlew` が自動で用意する）
-2. **コードを取ってくる**（好きなフォルダで）
-   ```
-   git clone https://github.com/yokota-work793/ProjectSummerWars.git
-   cd ProjectSummerWars
-   ```
-3. **画面の部品を入れる**（`frontend/package.json` が変わったときも、もう一度）
-   ```
-   cd frontend
-   npm install
-   cd ..
-   ```
+### 全体のイメージ
+```
+ブラウザ ─> http://localhost:5123  … ターミナル2：React（画面）
+                 │ /api/... は自動で中継（frontend/vite.config.js）
+                 ▼
+            http://localhost:5124  … ターミナル1：Java（API・データ）
+```
+- **ブラウザで開くのは 5123 だけ。** 5124 は開かなくてよいが、**動かしておく**（止まっていると画面に「エラーが起きました」と出る）
+- ターミナルは **2つ** 使う。どちらも使い終わるまで閉じない
+- 本番では React を Java の中に入れるので、Java 1つ・ポート1つで動く（下の「本番用にまとめる」）
 
-### 毎回
-**ターミナル1（Java・API）**
-```
-git pull                   # 作業前に必ず最新にする
-.\gradlew bootRun          # Windows（Mac・Linux は bash gradlew bootRun）
-```
-`Started KintaiApplication` が出るまで待つ（初回は数分）。
+> **大事：PowerShell を開いた直後は `C:\Users\自分の名前` にいる。**
+> 必ず最初に `cd` でプロジェクトのフォルダへ移動する（しないと「not a git repository」「.\gradlew は認識されません」と出る）。
+> 下の例は `C:\Users\自分の名前\ProjectSummerWars` に置いた場合。別の場所なら `~\ProjectSummerWars` をその場所に読み替える。
 
-**ターミナル2（React・画面）**
+---
+
+### 最初の1回だけ（準備）
+**① Java 21・Node.js・Git を入れる**（PowerShell）
 ```
-cd frontend
+winget install EclipseAdoptium.Temurin.21.JDK
+winget install OpenJS.NodeJS.LTS
+winget install Git.Git
+```
+入れたら PowerShell を**全部閉じて開き直す**。`java -version` で 21、`node -v` で v20 以上が出ればOK。Gradle は入れなくてよい。
+Mac は `brew install --cask temurin@21` と `brew install node git`。
+
+**② コードを取ってくる**
+```
+cd ~
+git clone https://github.com/yokota-work793/ProjectSummerWars.git
+```
+
+---
+
+### 毎回（作業のはじめ）
+最新を取る（更新）のも、この手順に入っている。毎回このとおりにやれば、いつも最新で開ける。
+
+**ターミナル1：Java（API・5124）**
+```
+cd ~\ProjectSummerWars
+git pull
+.\gradlew bootRun
+```
+- `<====---> 80% EXECUTING  > :bootRun` と出たまま止まって見えれば **起動成功**（100% にはならない）
+- このターミナルは閉じない。Ctrl + C や「バッチ ジョブを終了しますか」で Y を押すと止まる
+
+**ターミナル2：React（画面・5123）** ＝ PowerShell の「＋」で新しいタブを開く
+```
+cd ~\ProjectSummerWars\frontend
+npm install
 npm run dev
 ```
-1. ブラウザで **http://localhost:5123** を開く
-2. ユーザー名 `demo`、パスワード `1111` でログイン（開発用。本番では環境変数で変える）
-3. 終わったら、両方のターミナルで `Ctrl + C`
+- `npm install` は毎回やってよい（変わっていなければ数秒で終わる。他の人が部品を足したときもこれで揃う）
+- `Local: http://localhost:5123/` と出たら起動成功
 
-画面のファイル（`frontend/src/...`）を保存すると、ブラウザがすぐ変わる。Java のファイルを変えたときは、ターミナル1を `Ctrl + C` して起動し直す。
-テストは `.\gradlew test`（Mac は `bash gradlew test`）。
+**ブラウザ**
+1. **http://localhost:5123** を開く
+2. ユーザー名 `demo`／パスワード `1111` でログイン（開発用）
+
+**終わるとき**：両方のターミナルで `Ctrl + C` →「Y」
+
+---
+
+### 変えたものを画面に出す（反映）
+| 変えたもの | やること |
+|---|---|
+| 画面（`frontend/src/...`） | 保存するだけ。ブラウザが自動で変わる |
+| Java（`src/main/java/...`）・`application.yml` | ターミナル1を `Ctrl + C`→Y で止めて `.\gradlew bootRun` → ブラウザを F5 |
+| DB の表（`db/migration/`） | Java を起動し直す。エラーなら下の「うまくいかないとき」の data を消す |
+| `vite.config.js`・`package.json` | ターミナル2を止めて `npm install` → `npm run dev` |
+
+反映できたら、テスト（ルートで `.\gradlew test`）が通るのを確かめてから commit・push する。
+
+---
 
 ### うまくいかないとき
-- **`JAVA_HOME is not set` と出る**：Java が入っていないか、入れたあと PowerShell を開き直していない。`winget install EclipseAdoptium.Temurin.21.JDK` → PowerShell を全部閉じて開き直す → `java -version` で 21 を確認してから `.\gradlew bootRun`
-- **開き直しても同じ**：PowerShell で次を実行してから起動（その画面を閉じるまで有効）
-  ```
-  $env:JAVA_HOME = (Get-ChildItem "C:\Program Files\Eclipse Adoptium" -Directory | Select-Object -First 1).FullName
-  $env:Path = "$env:JAVA_HOME\bin;$env:Path"
-  ```
-- **`npm` が見つからない**：Node.js を入れて PowerShell を開き直す。`npm` で「スクリプトの実行が無効」と出たら `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` を1回実行
-- **画面は出るがログインできない／「エラーが起きました」と出る**：ターミナル1（Java）が動いているか確認。止まっていると画面から API が呼べない
-- **localhost:5123 が開かない**：ターミナル2で `npm run dev` が動いているか確認
-
-### 注意
-- Google の鍵を入れていないので、勤怠シートは仮データ（平日 9:30〜18:30）で動く。本物の Google には何も書き込まない
-- 画面で登録したデータは自分のPCの `data` フォルダだけに保存され、Git には入らない。消したいときは Java を止めてから `data` フォルダを消す
-- `frontend/node_modules` と `src/main/resources/static`（React をビルドしたもの）は Git に入れない
-
-### 本番用に1つにまとめるとき
-`cd frontend` → `npm run build` で React が `src/main/resources/static` に入り、Java だけ（5124）で画面も API も出せる。本番の出し方は決まってから決める。
-
-### Codespaces で開く場合（PCに入れられないとき）
-1. 緑の「Code」→「Codespaces」→ 作成または既存を選ぶ
-2. ターミナル1で `git pull` → `bash gradlew bootRun`、ターミナル2で `cd frontend && npm install && npm run dev`
-3. 「ポート」タブの 5123 を開く
-4. 終わったら `Ctrl + C`、Codespace も停止（止めないと無料枠が減る）
-
-## 5123 と 5124 のつながり
-```
-ブラウザ ──> http://localhost:5123（React の画面・npm run dev）
-                 │  画面が /api/... を呼ぶと
-                 ▼  自動で中継（frontend/vite.config.js の proxy）
-             http://localhost:5124（Java の API・bootRun / Eclipse）── DB（data/ フォルダ）
-```
-- ブラウザで開くのは **5123 だけ**。5124 は開かなくてよいが、**起動はしておく**（止まっていると画面に「エラーが起きました」と出る）
-- 中継の設定は `frontend/vite.config.js`（指輪）、Java のポートは `application.yml` の `server.port`（全員）。どちらかを変えたら、もう片方も合わせる
-- ログインの状態（Cookie）は 5123 のまま保たれるので、画面から見ると1つのサイトに見える
-- 本番では `npm run build` で React を Java の中に入れるので、Java 1つ（ポート1つ）で動く
-
-## 最新に更新する（毎朝・作業の前）
-1. Java と React を両方 `Ctrl + C` で止める（Eclipse なら赤い四角の停止ボタン）
-2. ルートで `git pull`
-3. 変わったものに合わせて：
-   | 変わったもの | やること |
-   |---|---|
-   | `frontend/package.json` | `cd frontend` → `npm install` |
-   | `build.gradle` | Eclipse：プロジェクトを右クリック →「Gradle」→「Gradle プロジェクトのリフレッシュ」（ターミナルなら何もしなくてよい） |
-   | `db/migration/` に新しい V〇 | 何もしなくてよい（起動したとき自動で表が変わる）。起動でエラーなら Java を止めて `data` フォルダを消して起動し直す（自分のPCの登録データは消える） |
-   | それ以外 | 何もしなくてよい |
-4. Java → React の順に起動し直す
-- だれが何を変えたかは GitHub のコミットメッセージ（先頭の【〇〇担当】）で見る
-
-## 変えたものを反映する（画面に出す）
-| 変えたもの | 反映のしかた |
+| 出たもの | 原因と直し方 |
 |---|---|
-| React（`frontend/src/...`） | 保存するだけ。ブラウザが自動で変わる |
-| Java（`src/main/java/...`） | Java を止めて起動し直す → ブラウザを再読み込み（F5） |
-| `application.yml` | Java を起動し直す |
-| `db/migration/` | Java を起動し直す（必要なら `data` フォルダを消す） |
-| `vite.config.js`・`package.json` | React（`npm run dev`）を起動し直す |
-- 反映できたら、テスト（`.\gradlew test` か Eclipse の JUnit）を通してから commit・push する
+| `not a git repository`／`.\gradlew は認識されません` | フォルダが違う。`cd ~\ProjectSummerWars` してからやり直す |
+| `cd : パス ...\frontend\frontend が存在しない` | もう frontend にいる。`cd frontend` は飛ばしてよい |
+| `'vite' は…認識されていません` | `npm install` をしていない。frontend で `npm install` → `npm run dev` |
+| `JAVA_HOME is not set` | Java を入れたあと PowerShell を開き直していない。全部閉じて開き直す |
+| `npm` が見つからない | Node.js を入れて PowerShell を開き直す。「スクリプトの実行が無効」なら `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` を1回 |
+| `BUILD FAILED`（bootRun） | 上にスクロールして `Caused by:` を見る。多いのは下の2つ |
+| 　└ `Port 5124 was already in use` | 前の Java が別タブで動いている。そのタブで Ctrl + C、または `Get-NetTCPConnection -LocalPort 5124 \| % { Stop-Process -Id $_.OwningProcess -Force }` |
+| 　└ `Flyway` / `Migration` のエラー | 自分のPCの試しデータが古い。Java を止めて ルートで `Remove-Item -Recurse -Force data` → 起動し直す |
+| 画面は出るがログインできない／「エラーが起きました」 | ターミナル1（Java）が止まっている。起動し直す |
+| localhost:5123 が開かない | ターミナル2（`npm run dev`）が止まっている |
+
+`JAVA_HOME` が開き直しても直らないとき（その画面を閉じるまで有効）：
+```
+$env:JAVA_HOME = (Get-ChildItem "C:\Program Files\Eclipse Adoptium" -Directory | Select-Object -First 1).FullName
+$env:Path = "$env:JAVA_HOME\bin;$env:Path"
+```
+
+### 知っておくこと
+- Google の鍵を入れていないので、勤怠シートは**仮データ**（平日 9:30〜18:30）で動く。本物の Google には何も書き込まない
+- 画面で登録したデータは自分のPCの `data` フォルダだけに入る。Git には入らない
+- `frontend/node_modules` と `src/main/resources/static` は Git に入れない
+
+---
 
 ## Eclipse で開く（Java 担当向け）
-React（`frontend/`）は Eclipse ではなく **VS Code** で触るのがおすすめ。Eclipse は Java（API）用に使う。
+Eclipse は **Java（ターミナル1の代わり）** に使う。画面（React）は上の「ターミナル2」のまま。React の編集は VS Code がおすすめ。
 
 ### 最初の1回だけ
-1. Eclipse は「Eclipse IDE for Enterprise Java and Web Developers」（2024-03 以降）を使う。Java 21 が入っていること（上の「最初の1回だけ」）
-2. 「ウィンドウ」→「設定」→「Java」→「インストール済みの JRE」で、Temurin 21（`C:\Program Files\Eclipse Adoptium\jdk-21...`）を追加してチェック
-3. 「ファイル」→「インポート」→「Gradle」→「既存の Gradle プロジェクト」→ ルートの `ProjectSummerWars` フォルダを選ぶ →「完了」
-   - 下の「Gradle 配布」は「Gradle ラッパー」のままでよい（gradlew と同じものを使う）
-   - Eclipse が作る `.project`・`.classpath`・`.settings/`・`bin/` は Git に入れない（.gitignore 済み）
-4. ターミナルで `cd frontend` → `npm install`（React の部品）
+1. 「Eclipse IDE for Enterprise Java and Web Developers」（2024-03 以降）を入れる
+2. 「ウィンドウ」→「設定」→「Java」→「インストール済みの JRE」→ Temurin 21（`C:\Program Files\Eclipse Adoptium\jdk-21…`）を追加してチェック
+3. 「ファイル」→「インポート」→「Gradle」→「既存の Gradle プロジェクト」→ `ProjectSummerWars` フォルダを選ぶ →「完了」（Gradle 配布は「Gradle ラッパー」のまま）
 
 ### 毎回
-1. 作業前に `git pull`（Eclipse の Git でもターミナルでもよい）。build.gradle が変わったら Gradle のリフレッシュ
-2. `src/main/java/app/kintai/KintaiApplication.java` を右クリック →「実行」→「Java アプリケーション」（Spring Tools を入れていれば「Spring Boot App」）
-   - コンソールに `Started KintaiApplication` と出たら 5124 で起動済み
-   - 2回目からは上の緑の実行ボタンでよい
-3. ターミナル（Eclipse の「ターミナル」ビューか PowerShell）で `cd frontend` → `npm run dev`
-4. ブラウザで http://localhost:5123（`demo` / `1111`）
-5. Java を直したら：赤い四角で止める → 緑の実行ボタン → ブラウザを F5
-6. テスト：`src/test/java` を右クリック →「実行」→「JUnit テスト」（1つだけならそのテストファイルを右クリック）
-- 止めずにもう1回起動すると「Port 5124 was already in use」と出る。コンソールの赤い四角で古い方を止めてから起動する
-- デバッグしたいときは「実行」の代わりに「デバッグ」→ 行番号の左をダブルクリックで止める場所を置き、画面を操作すると止まる
+1. **最新にする**：プロジェクトを右クリック →「チーム」→「プル」（またはターミナル1の `git pull`）
+   - `build.gradle` が変わっていたら：右クリック →「Gradle」→「Gradle プロジェクトのリフレッシュ」
+2. **Java を起動**：`src/main/java/app/kintai/KintaiApplication.java` を右クリック →「実行」→「Java アプリケーション」
+   - コンソールに `Started KintaiApplication` と出たらOK（2回目からは緑の実行ボタン）
+3. **画面を起動**：上の「ターミナル2」と同じ（`cd ~\ProjectSummerWars\frontend` → `npm install` → `npm run dev`）
+4. ブラウザで http://localhost:5123
+
+### Java を直したら
+赤い四角（停止）→ 緑の実行ボタン → ブラウザを F5
+- 止めずに2回起動すると `Port 5124 was already in use`。コンソールの赤い四角で古い方を止める
+- テスト：`src/test/java` を右クリック →「実行」→「JUnit テスト」
+- デバッグ：「実行」の代わりに「デバッグ」。行番号の左をダブルクリックで止める場所を置く
+- Eclipse が作る `.project`・`.classpath`・`.settings/`・`bin/` は Git に入れない（.gitignore 済み）
+
+---
+
+## 本番用にまとめる（決まってから）
+```
+cd ~\ProjectSummerWars\frontend
+npm run build
+```
+React が `src/main/resources/static` に入り、Java だけ（5124）で画面も API も出せる。
+
+## Codespaces で開く（PCに入れられないとき）
+1. GitHub の緑の「Code」→「Codespaces」→ 作成または既存を選ぶ
+2. ターミナル1：`git pull` → `bash gradlew bootRun`
+3. ターミナル2：`cd frontend` → `npm install` → `npm run dev`
+4. 「ポート」タブの 5123 を開く
+5. 終わったら Ctrl + C、Codespace も停止（止めないと無料枠が減る）
 
 ## Git の使い方（ぶつからないように）
 1. 作業を始める前に `git pull`
