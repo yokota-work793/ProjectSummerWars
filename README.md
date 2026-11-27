@@ -109,10 +109,20 @@ git pull                   # 作業前に必ず最新にする
 bash gradlew bootRun       # Mac・Linux・Codespaces
 ```
 1. `Started KintaiApplication` と出たら、ブラウザで **http://localhost:5123** を開く（初回は Gradle とライブラリのダウンロードで数分かかる）
-2. ユーザー名 `yamamoto`、パスワード `change-me` でログイン
+2. ユーザー名 `demo`、パスワード `1111` でログイン（開発用。本番では環境変数で変える）
 3. 終わったらターミナルで `Ctrl + C`
 
 テストは `.\gradlew test`（Mac は `bash gradlew test`）。
+
+### うまくいかないとき
+- **`JAVA_HOME is not set` と出る**：Java が入っていないか、入れたあと PowerShell を開き直していない。`winget install EclipseAdoptium.Temurin.21.JDK` → PowerShell を全部閉じて開き直す → `java -version` で 21 を確認してから `.\gradlew bootRun`
+- **開き直しても同じ**：PowerShell で次を実行してから起動（その画面を閉じるまで有効）
+  ```
+  $env:JAVA_HOME = (Get-ChildItem "C:\Program Files\Eclipse Adoptium" -Directory | Select-Object -First 1).FullName
+  $env:Path = "$env:JAVA_HOME\bin;$env:Path"
+  ```
+- **ログインできない**：`git pull` してから起動し直す（古い版は yamamoto / change-me）
+- **localhost:5123 が開かない**：PowerShell に `Started KintaiApplication` が出ているか確認。出ていなければまだ起動中か、エラーで止まっている
 
 ### 注意
 - Google の鍵を入れていないので、勤怠シートは仮データ（平日 9:30〜18:30）で動く。本物の Google には何も書き込まない
