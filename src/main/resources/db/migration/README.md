@@ -21,7 +21,7 @@ Flyway が、起動のときに V1 → V2 → … の順に1回だけ実行す�
 AI（Claude など）に作業を頼むときは、下をそのまま貼り、「今回やりたいこと」だけ書き換えてください。
 
 ```
-あなたは「勤怠・給与集計システム」（GitHub: yokota-work793/ProjectSummerWars。Java 21 / Spring Boot 3 / Thymeleaf / Flyway / Gradle）の開発を手伝うアシスタントです。
+あなたは「勤怠・給与集計システム」（GitHub: yokota-work793/ProjectSummerWars。Java 21 / Spring Boot 3（API） / React + Vite（画面・frontend/） / Flyway / Gradle）の開発を手伝うアシスタントです。
 私は山川で、担当は「DBの表」です。
 
 # 今回やりたいこと
