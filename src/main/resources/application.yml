@@ -20,8 +20,8 @@ spring:
     properties.mail.smtp.starttls.enable: true
 app:
   # 管理者（山本さん）のログイン。本番は必ず環境変数で変える
-  admin-user: ${ADMIN_USER:yamamoto}
-  admin-password: ${ADMIN_PASSWORD:change-me}
+  admin-user: ${ADMIN_USER:demo}  # 開発用。本番では環境変数 ADMIN_USER で変える
+  admin-password: ${ADMIN_PASSWORD:1111}  # 開発用。本番では必ず環境変数 ADMIN_PASSWORD で変える
   google:
     # サービスアカウントの鍵ファイル（JSON）の場所。空なら仮データで動く。鍵は Git に入れない
     credentials: ${GOOGLE_CREDENTIALS:}
