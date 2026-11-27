@@ -17,9 +17,10 @@
 | vite.config.js | 開発サーバー（5123）。/api は Java（5124）へ送る |
 
 ## 動かし方
-Java を先に起動（ルートで `.\gradlew bootRun`）してから、ここで：
+Java を先に起動（ターミナル1で `cd ~\ProjectSummerWars` → `git pull` → `.\gradlew bootRun`）してから、ターミナル2で：
 ```
-npm install      # 最初の1回と、package.json が変わったとき
+cd ~\ProjectSummerWars\frontend
+npm install      # 毎回やってよい（変わっていなければ数秒）
 npm run dev      # http://localhost:5123
 ```
 
@@ -50,9 +51,8 @@ npm run dev      # http://localhost:5123
 - 他の人の担当フォルダを変えたいときは、自分で直さずに担当者へ伝える（Issue か Pull Request に名前を書く）
 
 ## 作業のしかた（画面が React になってから）
-- 編集は **VS Code** がおすすめ（Eclipse は Java 用）。Java を先に起動（Eclipse で KintaiApplication を「実行」か `.\gradlew bootRun`）→ ここで `npm run dev` → http://localhost:5123
+- 編集は **VS Code** がおすすめ（Eclipse は Java 用）。Java を先に起動（ターミナル1で `cd ~\ProjectSummerWars` → `git pull` → `.\gradlew bootRun`）→ ターミナル2で `cd ~\ProjectSummerWars\frontend` → `npm install` → `npm run dev` → http://localhost:5123
 - 保存するとブラウザが自動で変わる。Java 側（API）が変わったときは Java を起動し直す
-- 作業前に `git pull`。`package.json` が変わっていたら `npm install`
 - 5123 → 5124 の中継は vite.config.js の proxy。ポートを変えるときは application.yml（Java）と合わせる
 - API の形（項目名・URL）が変わったら、その画面のファイルを直す。Java の担当者から連絡が来る
 - 新しい画面（URL）を足したら、App.jsx と config/HomeController.java（指輪）の両方に足す
