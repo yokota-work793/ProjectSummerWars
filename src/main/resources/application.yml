@@ -11,8 +11,6 @@ spring:
     open-in-view: false
   flyway:
     enabled: true
-  thymeleaf:
-    cache: false
   # メール送信（社労士へCSV）を使うときだけ、環境変数 SPRING_MAIL_HOST・SPRING_MAIL_USERNAME・SPRING_MAIL_PASSWORD を入れる
   mail:
     port: 587
@@ -26,7 +24,7 @@ app:
     # サービスアカウントの鍵ファイル（JSON）の場所。空なら仮データで動く。鍵は Git に入れない
     credentials: ${GOOGLE_CREDENTIALS:}
 server:
-  port: ${PORT:5123}  # 8080 は他のアプリで使っているので 5123 にした
+  port: ${PORT:5124}  # API。画面（React）は 5123 で開き、/api をここへ送る（8080 は他で使用中）
 ---
 spring:
   config.activate.on-profile: prod
@@ -34,5 +32,3 @@ spring:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/kintai}
     username: ${DB_USER:kintai}
     password: ${DB_PASSWORD:kintai_dev}
-  thymeleaf:
-    cache: true
