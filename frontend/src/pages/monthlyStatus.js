@@ -30,20 +30,34 @@ export function mockRows(ym) {
   const base = (no, name, dept, days, work, over, comm, house, fixed, fixedName, trans, other) =>
     [ym, no, name, dept, '正社員', '月給', '250000', '8:00', String(days), work, over, '0:00', '0:00', '0:00', '0:00', '0', '0',
       String(comm), String(house), String(fixed), fixedName, '0', '', String(trans), String(other), '集計済み']
-  return [
-    { row: base('E0001', '山田 太郎', '開発部', 20, '160:00', '8:30', 10000, 10000, 5000, '資格手当', 3200, 0),
-      status: { attendance: '反映済', expense: '反映済', leave: '申請なし' } },
-    { row: base('E0002', '佐藤 花子', '開発部', 0, '0:00', '0:00', 12000, 0, 0, '', 0, 0),
-      status: { attendance: '未提出', expense: '反映済', leave: '反映済' } },
-    { row: base('E0003', '鈴木 一郎', '営業部', 19, '152:00', '3:00', 8000, 10000, 0, '', 0, 0),
-      status: { attendance: '未反映', expense: '未申請', leave: '申請なし' } },
-    { row: base('E0004', '高橋 美咲', '総務部', 18, '144:00', '0:00', 9000, 0, 0, '', 1500, 4800),
-      status: { attendance: '反映済', expense: '承認待ち', leave: '反映済' } },
-    { row: base('E0005', '田中 健', '開発部', 17, '136:00', '1:15', 10000, 10000, 10000, '役職手当', 2400, 0),
-      status: { attendance: '反映済', expense: '反映済', leave: '未確認' } },
-    { row: base('E0006', '伊藤 さくら', '営業部', 21, '168:00', '12:00', 15000, 0, 0, '', 0, 0),
-      status: { attendance: '反映済', expense: '反映済', leave: '未申請' } },
+  const people = [
+    ['E0001', '山田 太郎', '開発部', 10000, 10000, 5000, '資格手当'],
+    ['E0002', '佐藤 花子', '開発部', 12000, 0, 0, ''],
+    ['E0003', '鈴木 一郎', '営業部', 8000, 10000, 0, ''],
+    ['E0004', '高橋 美咲', '総務部', 9000, 0, 0, ''],
+    ['E0005', '田中 健', '開発部', 10000, 10000, 10000, '役職手当'],
+    ['E0006', '伊藤 さくら', '営業部', 15000, 0, 0, ''],
   ]
+  // 月ごとに状態と数字が変わるようにする（同じ月なら毎回同じ）
+  const patterns = [
+    { attendance: '反映済', expense: '反映済', leave: '申請なし' },
+    { attendance: '未提出', expense: '反映済', leave: '反映済' },
+    { attendance: '未反映', expense: '未申請', leave: '申請なし' },
+    { attendance: '反映済', expense: '承認待ち', leave: '反映済' },
+    { attendance: '反映済', expense: '反映済', leave: '未確認' },
+    { attendance: '反映済', expense: '反映済', leave: '未申請' },
+    { attendance: '反映済', expense: '反映済', leave: '反映済' },
+  ]
+  const [y, m] = ym.split('-').map(Number)
+  const seed = y * 12 + m
+  const hm = (min) => `${Math.floor(min / 60)}:${String(min % 60).padStart(2, '0')}`
+  return people.map(([no, name, dept, comm, house, fixed, fixedName], i) => {
+    const status = patterns[(seed + i * 3) % patterns.length]
+    const days = status.attendance === '未提出' ? 0 : 17 + ((seed + i) % 5)
+    const over = days ? ((seed * 7 + i * 13) % 20) * 30 : 0
+    const trans = status.expense === '反映済' ? ((seed + i) % 4) * 800 : 0
+    return { row: base(no, name, dept, days, hm(days * 480 + over), hm(over), comm, house, fixed, fixedName, trans, 0), status }
+  })
 }
 
 /** カレンダーから集計する年月を決める：1〜15日は前月、16日以降は当月 */

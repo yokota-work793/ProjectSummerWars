@@ -1,12 +1,51 @@
 // 担当：指輪（画面）。月次集計（API：/api/monthly。列の定義は Java の MonthlyColumns＝山川さん）
 // 申請・取込状況はいまは仮データ（monthlyStatus.js）。実データへの差し替えは monthlyStatus.js だけ直せばよい
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { api } from '../api.js'
 import { Flash } from '../Layout.jsx'
 import { FILTERS, LEVEL, autoYm, mockRows, needsCheck, shiftYm, statusOf } from './monthlyStatus.js'
 
 const Badge = ({ v }) => <span className={'tag ' + (LEVEL[v] || 'gray')}>{v}</span>
+const label = (ym) => `${Number(ym.slice(0, 4))}年${Number(ym.slice(5))}月`
+
+/** 年月をカレンダーで選ぶ（年は ‹ › で何年でも移動できる） */
+function MonthPicker({ value, onChange }) {
+  const [open, setOpen] = useState(false)
+  const [year, setYear] = useState(Number(value.slice(0, 4)))
+  const ref = useRef(null)
+  useEffect(() => { setYear(Number(value.slice(0, 4))) }, [value, open])
+  useEffect(() => {
+    const close = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false) }
+    document.addEventListener('mousedown', close)
+    return () => document.removeEventListener('mousedown', close)
+  }, [])
+  const pick = (ym) => { onChange(ym); setOpen(false) }
+  const now = autoYm()
+  return (
+    <div className="mp" ref={ref}>
+      <button className="btn-sub mp-arrow" onClick={() => onChange(shiftYm(value, -1))} title="前の月">◀</button>
+      <button className="btn-sub mp-label" onClick={() => setOpen(!open)}>📅 {label(value)}</button>
+      <button className="btn-sub mp-arrow" onClick={() => onChange(shiftYm(value, 1))} title="次の月">▶</button>
+      {open && (
+        <div className="mp-pop">
+          <div className="mp-head">
+            <button className="link" onClick={() => setYear(year - 1)}>‹</button>
+            <strong>{year}年</strong>
+            <button className="link" onClick={() => setYear(year + 1)}>›</button>
+          </div>
+          <div className="mp-grid">
+            {Array.from({ length: 12 }, (_, i) => {
+              const ym = `${year}-${String(i + 1).padStart(2, '0')}`
+              return <button key={ym} className={'mp-m' + (ym === value ? ' on' : '') + (ym === now ? ' now' : '')} onClick={() => pick(ym)}>{i + 1}月</button>
+            })}
+          </div>
+          <button className="link mp-now" onClick={() => pick(now)}>今の集計月（{label(now)}）へ</button>
+        </div>
+      )}
+    </div>
+  )
+}
 
 export default function Monthly() {
   const [params, setParams] = useSearchParams()
@@ -17,8 +56,6 @@ export default function Monthly() {
   const [q, setQ] = useState('')
   const [filter, setFilter] = useState('all')
   const ym = params.get('ym') || autoYm()
-  const thisYear = new Date().getFullYear()
-  const [y, m] = ym.split('-')
 
   const load = async (month) => {
     try { setView(await api.get(`/api/monthly?ym=${month}`)) } catch (e) { setFlash({ error: e.message }) }
@@ -59,19 +96,9 @@ export default function Monthly() {
       <Flash {...flash} />
       <div className="row between mb">
         <h1>月次集計</h1>
-        <div className="row">
-          <button className="btn-sub" onClick={() => go(shiftYm(ym, -1))}>◀ 前の月</button>
-          <select value={y} onChange={(e) => go(`${e.target.value}-${m}`)} style={{ width: 'auto' }}>
-            {Array.from({ length: 7 }, (_, i) => thisYear - 5 + i).map((v) => <option key={v} value={v}>{v}年</option>)}
-          </select>
-          <select value={m} onChange={(e) => go(`${y}-${e.target.value}`)} style={{ width: 'auto' }}>
-            {Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, '0')).map((v) => <option key={v} value={v}>{Number(v)}月</option>)}
-          </select>
-          <button className="btn-sub" onClick={() => go(shiftYm(ym, 1))}>次の月 ▶</button>
-          <button className="btn-outline" onClick={() => go(autoYm())} title="1〜15日は前月、16日以降は当月">今の集計月へ</button>
-        </div>
+        <MonthPicker value={ym} onChange={go} />
       </div>
-      <p className="muted" style={{ marginTop: -8 }}>開いたときは日付から自動で選びます（1〜15日は前月、16日以降は当月）。いま：{autoYm().replace('-', '年')}月</p>
+      <p className="muted" style={{ marginTop: -8 }}><strong>{label(view.ym)}</strong> の集計を表示中。開いたときは日付から自動で選びます（1〜15日は前月、16日以降は当月）</p>
 
       {view.fake && <div className="warn">Google につながっていないため、仮データで動いています（どの勤怠シートも平日 9:30〜18:30 として読みます）。</div>}
 
