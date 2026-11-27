@@ -31,6 +31,9 @@ public class Employee {
     @Column(name = "fixed_allowance_name") private String fixedAllowanceName;
     @Column(name = "sheet_url") private String sheetUrl;
     @Column(name = "folder_url") private String folderUrl;
+    @Column(name = "daily_report_url") private String dailyReportUrl;
+    @Column(name = "expense_form_url") private String expenseFormUrl;
+    @Column(name = "leave_form_url") private String leaveFormUrl;
     @Column(name = "share_state") private String shareState = "未作成";
     @Column(name = "created_at") private LocalDateTime createdAt = LocalDateTime.now();
     @Column(name = "updated_at") private LocalDateTime updatedAt = LocalDateTime.now();
@@ -39,6 +42,15 @@ public class Employee {
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("startOn ASC")
     private List<ProjectAssignment> assignments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("id ASC")
+    private List<EmployeeAllowance> allowances = new ArrayList<>();
+
+    public void replaceAllowances(List<EmployeeAllowance> list) {
+        allowances.clear();
+        list.forEach(a -> { a.setEmployee(this); allowances.add(a); });
+    }
 
     public void replaceAssignments(List<ProjectAssignment> list) {
         assignments.clear();
@@ -91,4 +103,11 @@ public class Employee {
     public LocalDateTime getDeletedAt() { return deletedAt; }
     public void markDeleted() { deletedAt = LocalDateTime.now(); shareState = "共有停止"; }
     public List<ProjectAssignment> getAssignments() { return assignments; }
+    public List<EmployeeAllowance> getAllowances() { return allowances; }
+    public String getDailyReportUrl() { return dailyReportUrl; }
+    public void setDailyReportUrl(String v) { dailyReportUrl = v; }
+    public String getExpenseFormUrl() { return expenseFormUrl; }
+    public void setExpenseFormUrl(String v) { expenseFormUrl = v; }
+    public String getLeaveFormUrl() { return leaveFormUrl; }
+    public void setLeaveFormUrl(String v) { leaveFormUrl = v; }
 }

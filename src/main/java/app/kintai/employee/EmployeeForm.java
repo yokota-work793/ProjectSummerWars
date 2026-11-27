@@ -34,7 +34,28 @@ public class EmployeeForm {
     private String sheetUrl = "";
     @Size(max = 255) @jakarta.validation.constraints.Pattern(regexp = "^$|^https://drive\\.google\\.com/.*", message = "GoogleドライブのフォルダURLを入力してください")
     private String folderUrl = "";
+    /** 日報のスプレッドシート */
+    @Size(max = 255) @jakarta.validation.constraints.Pattern(regexp = "^$|^https://docs\\.google\\.com/spreadsheets/.*", message = "GoogleスプレッドシートのURLを入力してください")
+    private String dailyReportUrl = "";
+    /** 交通費・経費の申請フォーム */
+    @Size(max = 255) @jakarta.validation.constraints.Pattern(regexp = "^$|^https://(docs\\.google\\.com/forms/|forms\\.gle/).*", message = "GoogleフォームのURLを入力してください")
+    private String expenseFormUrl = "";
+    /** 休暇申請フォーム */
+    @Size(max = 255) @jakarta.validation.constraints.Pattern(regexp = "^$|^https://(docs\\.google\\.com/forms/|forms\\.gle/).*", message = "GoogleフォームのURLを入力してください")
+    private String leaveFormUrl = "";
     @Valid private List<AssignmentForm> history = new ArrayList<>();
+    /** 手当（名前が空の行は保存しない） */
+    @Valid private List<AllowanceForm> allowances = new ArrayList<>();
+
+    /** 手当の1行 */
+    public static class AllowanceForm {
+        @Size(max = 50, message = "手当の名前は50文字以内です") private String name;
+        @PositiveOrZero(message = "手当は0以上で入力してください") private Integer amount = 0;
+        public AllowanceForm() {}
+        public AllowanceForm(String name, Integer amount) { this.name = name; this.amount = amount; }
+        public String getName() { return name; } public void setName(String v) { name = v; }
+        public Integer getAmount() { return amount; } public void setAmount(Integer v) { amount = v; }
+    }
 
     /** 案件・参画履歴の1行（案件名が空の行は保存しない） */
     public static class AssignmentForm {
@@ -71,4 +92,8 @@ public class EmployeeForm {
     public String getSheetUrl() { return sheetUrl; } public void setSheetUrl(String v) { sheetUrl = v; }
     public String getFolderUrl() { return folderUrl; } public void setFolderUrl(String v) { folderUrl = v; }
     public List<AssignmentForm> getHistory() { return history; } public void setHistory(List<AssignmentForm> v) { history = v; }
+    public List<AllowanceForm> getAllowances() { return allowances; } public void setAllowances(List<AllowanceForm> v) { allowances = v == null ? new ArrayList<>() : v; }
+    public String getDailyReportUrl() { return dailyReportUrl; } public void setDailyReportUrl(String v) { dailyReportUrl = v; }
+    public String getExpenseFormUrl() { return expenseFormUrl; } public void setExpenseFormUrl(String v) { expenseFormUrl = v; }
+    public String getLeaveFormUrl() { return leaveFormUrl; } public void setLeaveFormUrl(String v) { leaveFormUrl = v; }
 }

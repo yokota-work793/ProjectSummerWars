@@ -53,6 +53,8 @@ public class EmployeeService {
         f.setFixedName(e.getFixedAllowanceName());
         f.setSheetUrl(e.getSheetUrl() == null ? "" : e.getSheetUrl()); f.setFolderUrl(e.getFolderUrl() == null ? "" : e.getFolderUrl());
         e.getAssignments().forEach(a -> f.getHistory().add(new EmployeeForm.AssignmentForm(a.getProjectName(), a.getIncentive(), a.getStartOn(), a.getEndOn())));
+        e.getAllowances().forEach(a -> f.getAllowances().add(new EmployeeForm.AllowanceForm(a.getName(), a.getAmount())));
+        f.setDailyReportUrl(nv(e.getDailyReportUrl())); f.setExpenseFormUrl(nv(e.getExpenseFormUrl())); f.setLeaveFormUrl(nv(e.getLeaveFormUrl()));
         return f;
     }
 
@@ -203,12 +205,24 @@ public class EmployeeService {
         e.setStandardMinutes(std == null ? 480 : std);
         e.setCommuteAllowance(nz(f.getCommute()));
         e.setHousingAllowance(nz(f.getHousing()));
-        e.setFixedAllowance(nz(f.getFixed()));
-        e.setFixedAllowanceName(f.getFixedName());
+        // 手当：画面の行を保存。行が無く固定手当だけ来たとき（GAS版の取り込みなど）は、それを1行にする
+        List<EmployeeForm.AllowanceForm> rows = f.getAllowances().stream().filter(a -> has(a.getName())).toList();
+        if (rows.isEmpty() && nz(f.getFixed()) > 0)
+            rows = List.of(new EmployeeForm.AllowanceForm(has(f.getFixedName()) ? f.getFixedName().trim() : "固定手当", f.getFixed()));
+        e.replaceAllowances(rows.stream().map(a -> new EmployeeAllowance(a.getName().trim(), nz(a.getAmount()))).toList());
+        // 月次集計（山川さん）は今までどおり「固定手当」の1列で読むので、合計と名前を入れておく
+        e.setFixedAllowance(rows.stream().mapToInt(a -> nz(a.getAmount())).sum());
+        String names = String.join("・", rows.stream().map(a -> a.getName().trim()).toList());
+        e.setFixedAllowanceName(names.isEmpty() ? null : names.length() > 50 ? names.substring(0, 50) : names);
+        e.setDailyReportUrl(blankToNull(f.getDailyReportUrl()));
+        e.setExpenseFormUrl(blankToNull(f.getExpenseFormUrl()));
+        e.setLeaveFormUrl(blankToNull(f.getLeaveFormUrl()));
         e.replaceAssignments(f.getHistory().stream().filter(h -> has(h.getProject()))
                 .map(h -> new ProjectAssignment(h.getProject().trim(), nz(h.getAmount()), h.getFrom(), h.getTo())).toList());
     }
 
     private static int nz(Integer v) { return v == null ? 0 : v; }
+    private static String nv(String v) { return v == null ? "" : v; }
+    private static String blankToNull(String v) { return has(v) ? v.trim() : null; }
     private static boolean has(String s) { return s != null && !s.isBlank(); }
 }
