@@ -36,6 +36,32 @@
 
 ---
 
+### いちばん簡単な開き方（おすすめ）：start.ps1
+最初の1回の準備（下の「最初の1回だけ」）が終わっていれば、毎回これだけでよい。
+```
+cd ~\ProjectSummerWars
+.\start.ps1
+```
+- 自動で `git pull`（最新を取る）→ `npm install` → Java の窓・React の窓・「自動で最新を取る」窓の3つを開き、ブラウザで http://localhost:5123 を開く
+- **「自動で最新を取る」窓は1分ごとに `git pull` する。** だれかが push すると、1分以内に自分の PC も最新になる
+  - 画面（React）の変更：ブラウザにそのまま出る
+  - Java の変更：窓に「★ Java が変わりました」と出るので、Java の窓で Ctrl+C → Y → `.\gradlew bootRun`
+- 終わるときは3つの窓を閉じる
+- 「スクリプトの実行が無効」と出たら、1回だけ `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`
+
+### 変更したら：save.ps1 で GitHub に送る（push）
+**push しないと、ほかの人には届かない。** 保存（Ctrl+S）やコミットだけでは自分の PC の中だけ。
+```
+cd ~\ProjectSummerWars
+.\save.ps1 "【横田担当】残業のルールを直しました"
+```
+- 自動で コミット → ほかの人の最新を取り込む → push まで行う。ほかの人の PC には1分以内に入る
+- **Eclipse の場合**：プロジェクトを右クリック →「チーム」→「コミット」→ メッセージを書いて「コミットおよびプッシュ」（または上の `.\save.ps1`）
+- **AI に書かせた場合**：AI が変えたファイルを確かめてから `.\save.ps1 "【〇〇担当】何をしたか"`
+- 自分の担当外のファイルは変えない。鍵ファイル・パスワードは入れない（.gitignore 済み）
+
+---
+
 ### 最初の1回だけ（準備）
 **① Java 21・Node.js・Git を入れる**（PowerShell）
 ```
