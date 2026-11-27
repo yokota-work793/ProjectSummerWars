@@ -17,6 +17,14 @@ Flyway が、起動のときに V1 → V2 → … の順に1回だけ実行す�
 - H2（開発）と PostgreSQL（本番）の両方で動く SQL にする
 - 他の人の担当フォルダを変えたいときは、自分で直さずに担当者へ伝える（Issue か Pull Request に名前を書く）
 
+## 作業のしかた（画面が React になってから）
+- 画面は `frontend/`（React・指輪）。DB の表を変えても、画面に出すには API（各担当の Controller）と React の変更が要る
+- 動かす：Java（5124）を Eclipse（KintaiApplication を「実行」）か `.\gradlew bootRun` で起動 → 別のターミナルで `cd frontend` → `npm run dev` → ブラウザで http://localhost:5123（`demo` / `1111`）
+- Java を変えたら：Java を止めて起動し直す → ブラウザを F5。テストは Eclipse でテストファイルを右クリック →「JUnit テスト」か `.\gradlew test`
+- 作業前に `git pull`。手順の詳細（Eclipse のつなげ方・更新のしかた）はルートの README.md
+- 新しい V〇__ を足したら Java を起動し直すと自動で表が変わる。起動でエラーなら Java を止めて `data` フォルダを消して起動し直す（自分のPCの登録データは消える）
+- 既にある V1〜V3 は絶対に書き換えない（みんなの PC と本番で起動できなくなる）
+
 ## AIへの指示プロンプト（コピーして使う）
 AI（Claude など）に作業を頼むときは、下をそのまま貼り、「今回やりたいこと」だけ書き換えてください。
 
