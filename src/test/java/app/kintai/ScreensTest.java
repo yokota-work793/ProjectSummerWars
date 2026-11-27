@@ -52,7 +52,9 @@ class ScreensTest {
                 .andExpect(status().isOk());
         String body = """
                 {"no":"E0001","name":"山田 太郎","mail":"taro@example.com","joined":"2025-04-01","type":"正社員","status":"在籍",
-                 "payType":"月給","base":250000,"stdTime":"8:00","commute":10000,"housing":10000,"fixed":0,
+                 "payType":"月給","base":250000,"stdTime":"8:00","commute":10000,"housing":10000,
+                 "allowances":[{"name":"資格手当","amount":5000},{"name":"","amount":0}],
+                 "dailyReportUrl":"https://docs.google.com/spreadsheets/d/REPORT/edit","leaveFormUrl":"https://forms.gle/leave",
                  "history":[{"project":"案件A","amount":30000,"from":null,"to":null}]}
                 """;
         mvc.perform(post("/api/employees").with(csrf()).contentType(MediaType.APPLICATION_JSON).content(body))
@@ -60,7 +62,10 @@ class ScreensTest {
         mvc.perform(post("/api/employees").with(csrf()).contentType(MediaType.APPLICATION_JSON).content(body))
                 .andExpect(status().isBadRequest()).andExpect(jsonPath("$.errors.no").exists());
         mvc.perform(get("/api/employees/E0001")).andExpect(status().isOk())
-                .andExpect(jsonPath("$.form.name").value("山田 太郎"));
+                .andExpect(jsonPath("$.form.name").value("山田 太郎"))
+                .andExpect(jsonPath("$.form.allowances.length()").value(1))          // 名前が空の行は保存しない
+                .andExpect(jsonPath("$.form.allowances[0].name").value("資格手当"))
+                .andExpect(jsonPath("$.form.leaveFormUrl").value("https://forms.gle/leave"));
         mvc.perform(post("/api/monthly/sheets").with(csrf()).param("ym", "2026-12")).andExpect(status().isOk());
         mvc.perform(post("/api/monthly/collect").with(csrf()).param("ym", "2026-12")).andExpect(status().isOk());
         mvc.perform(get("/api/monthly").param("ym", "2026-12")).andExpect(status().isOk())
