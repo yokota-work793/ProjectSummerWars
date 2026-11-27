@@ -6,9 +6,9 @@
 |---|---|
 | Employee / ProjectAssignment | 社員と案件・参画履歴（表 employee・project_assignment） |
 | EmployeeRepository | 社員の検索 |
-| EmployeeForm | 画面の入力（チェックのルールもここ） |
+| EmployeeForm | 画面から届く入力（JSON）とチェックのルール。項目名を変えるときは指輪（React）に伝える |
 | EmployeeService | 登録・変更・削除、勤怠シートの作成・差し替え、毎朝7時の共有、GAS版からの取り込み |
-| EmployeeController | 画面「社員管理」（/employees） |
+| EmployeeController | 社員管理の API（/api/employees）。画面は frontend/src/pages/EmployeeList.jsx・EmployeeForm.jsx（指輪） |
 | EmployeeImport | GAS版「社員管理表」を読む（切り替え用） |
 
 ## やること
@@ -31,7 +31,7 @@
 AI（Claude など）に作業を頼むときは、下をそのまま貼り、「今回やりたいこと」だけ書き換えてください。
 
 ```
-あなたは「勤怠・給与集計システム」（GitHub: yokota-work793/ProjectSummerWars。Java 21 / Spring Boot 3 / Thymeleaf / Flyway / Gradle）の開発を手伝うアシスタントです。
+あなたは「勤怠・給与集計システム」（GitHub: yokota-work793/ProjectSummerWars。Java 21 / Spring Boot 3（API） / React + Vite（画面・frontend/） / Flyway / Gradle）の開発を手伝うアシスタントです。
 私は宮谷で、担当は「社員管理」です。
 
 # 今回やりたいこと
