@@ -51,15 +51,6 @@ export default function Monthly() {
   if (!view) return <><Flash {...flash} /><p className="muted">読み込み中…</p></>
   const hasRows = view.rows.length > 0
   const total = items.length
-  const count = (k, fn) => items.filter(({ status }) => fn(status[k])).length
-  const isOk = (v) => LEVEL[v] === 'ok'
-  const isNg = (v) => ['warn', 'bad'].includes(LEVEL[v])
-  const cards = [
-    { key: 'attendance', title: '勤怠シート', done: count('attendance', isOk), ng: count('attendance', isNg), ngLabel: '未反映・未提出' },
-    { key: 'expense', title: '交通費・経費フォーム', done: count('expense', isOk), ng: count('expense', isNg), ngLabel: '未申請・承認待ち' },
-    { key: 'leave', title: '休暇申請フォーム', done: count('leave', isOk), ng: count('leave', isNg), ngLabel: '未申請・確認待ち' },
-  ]
-  const issues = items.filter(({ status }) => needsCheck(status)).length
   const header = view.header
   const rest = header.map((h, i) => i).filter((i) => i > 2) // 0=対象月 1=社員番号 2=氏名 は左に固定
 
@@ -85,13 +76,12 @@ export default function Monthly() {
       {view.fake && <div className="warn">Google につながっていないため、仮データで動いています（どの勤怠シートも平日 9:30〜18:30 として読みます）。</div>}
 
       <div className="card pad mb">
-        <div className="muted mb">毎月の流れ（{view.ym.replace('-', '年')}月）</div>
         <div className="row">
-          <button className="btn-outline" disabled={busy} onClick={() => run('sheets')}>① 全員の勤怠シートに月のシートを作る</button>
-          <button className="btn" disabled={busy || view.fixed} onClick={() => run('collect')}>② 集計する</button>
-          {hasRows && <a className="btn-outline" href={`/api/monthly/csv?ym=${view.ym}`}>③ CSVをダウンロード</a>}
-          {hasRows && <button className="btn-outline" disabled={busy} onClick={() => run('send')}>③ 社労士へメールで送る</button>}
-          {hasRows && !view.fixed && <button className="btn-danger" disabled={busy} onClick={() => run('fix', '確定すると、この月は集計し直せなくなります。よろしいですか？')}>④ 確定する</button>}
+          <button className="btn" disabled={busy || view.fixed} onClick={() => run('collect')}>集計する</button>
+          <button className="btn-outline" disabled={busy || !hasRows} onClick={() => run('send', `${view.ym.replace('-', '年')}月の集計を社労士へメールで送ります。よろしいですか？`)}>社労士へ送信する</button>
+          {hasRows && <a className="btn-outline" href={`/api/monthly/csv?ym=${view.ym}`}>CSVをダウンロード</a>}
+          {hasRows && !view.fixed && <button className="btn-danger" disabled={busy} onClick={() => run('fix', '確定すると、この月は集計し直せなくなります。よろしいですか？')}>確定する</button>}
+          {!hasRows && <span className="muted">まず「集計する」を押してください（送信は集計のあとにできます）</span>}
         </div>
       </div>
 
@@ -104,25 +94,13 @@ export default function Monthly() {
       </div>
       {useMock && <div className="info">いまは<strong>仮データ（モック）</strong>を表示しています。Google のフォーム・シートとの連携ができたら、実データに切り替わります。</div>}
 
-      <div className="summary mb">
-        <button className={'summary-card ' + (issues ? 'bad' : 'ok') + (filter === 'issue' ? ' on' : '')} onClick={() => setFilter(filter === 'issue' ? 'all' : 'issue')}>
-          <div className="summary-title">申請漏れ・要確認</div>
-          <div className="summary-num">{issues}<small> 人</small></div>
-          <div className="summary-sub">{issues ? 'クリックで該当者だけ表示' : '問題ありません'}</div>
-        </button>
-        {cards.map((c) => (
-          <button key={c.key} className={'summary-card ' + (c.ng ? 'warn' : 'ok') + (filter === c.key ? ' on' : '')} onClick={() => setFilter(filter === c.key ? 'all' : c.key)}>
-            <div className="summary-title">{c.title}</div>
-            <div className="summary-num">{c.done}<small> / {total} 人 反映済</small></div>
-            <div className="summary-sub">{c.ng ? <span className="tag bad">{c.ngLabel} {c.ng}人</span> : <span className="tag ok">漏れなし</span>}</div>
-          </button>
-        ))}
-      </div>
-
       <div className="row mb">
         <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="氏名・社員番号で検索" style={{ maxWidth: 280 }} />
         <select value={filter} onChange={(e) => setFilter(e.target.value)} style={{ width: 'auto' }}>
-          {FILTERS.map((f) => <option key={f.key} value={f.key}>{f.label}</option>)}
+          {FILTERS.map((f) => {
+            const n = f.test ? items.filter(({ status }) => f.test(status)).length : total
+            return <option key={f.key} value={f.key}>{f.label}（{n}人）</option>
+          })}
         </select>
         <span className="muted">{shown.length} / {total} 人を表示</span>
       </div>
@@ -150,7 +128,7 @@ export default function Monthly() {
             })}
             {shown.length === 0 && (
               <tr><td colSpan={rest.length + 6} className="muted">
-                {total === 0 ? 'まだ集計していません。「② 集計する」を押してください。' : '条件に合う社員はいません。'}
+                {total === 0 ? 'まだ集計していません。「集計する」を押してください。' : '条件に合う社員はいません。'}
               </td></tr>
             )}
           </tbody>
