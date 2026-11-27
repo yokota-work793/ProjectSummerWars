@@ -16,6 +16,13 @@
 - 他の人の担当のテストは変更しない。落ちたら担当者に伝える
 - Actions が赤くなったら、まず自分の変更を見直し、直してから次の作業をする
 
+## 作業のしかた（画面が React になってから）
+- 画面は React（`frontend/`）になったので、ScreensTest は画面ではなく **API** を確かめる（JSON の中身を jsonPath で見る）
+- 実行：Eclipse で `src/test/java` を右クリック →「実行」→「JUnit テスト」、またはルートで `.\gradlew test`
+- 日本語は `content().string(...)` だと文字化けで落ちるので、`jsonPath(...)` で確かめる
+- push すると GitHub の Actions でも自動で動く。赤くなったら「失敗したテスト」の欄を見る
+- 手順の詳細（Eclipse のつなげ方・更新のしかた）はルートの README.md
+
 ## AIへの指示プロンプト（テストを書くとき。コピーして使う）
 ```
 あなたは「勤怠・給与集計システム」（GitHub: yokota-work793/ProjectSummerWars。Java 21 / Spring Boot 3 / JUnit 5 / Gradle）の開発を手伝うアシスタントです。
