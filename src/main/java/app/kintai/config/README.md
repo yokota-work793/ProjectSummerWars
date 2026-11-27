@@ -2,8 +2,8 @@
 
 | ファイル | 中身 | 担当 |
 |---|---|---|
-| SecurityConfig | ログイン（今は管理者1人。ADMIN_USER / ADMIN_PASSWORD） | 山川 |
-| HomeController | トップ（/ → 社員管理）、ログイン画面 | 指輪 |
+| SecurityConfig | ログイン（今は管理者1人。ADMIN_USER / ADMIN_PASSWORD）。React からは POST /api/login、/api/** はログイン必須、安全対策（CSRF）は Cookie「XSRF-TOKEN」 | 山川 |
+| HomeController | 画面の URL で React（index.html）を返す、ログイン中の人（GET /api/me） | 指輪 |
 
 ## やること
 - [ ] 本番前に ADMIN_PASSWORD を必ず変える
@@ -19,7 +19,7 @@
 AI（Claude など）に作業を頼むときは、下をそのまま貼り、「今回やりたいこと」だけ書き換えてください。指輪は templates/README.md のプロンプトを使う。
 
 ```
-あなたは「勤怠・給与集計システム」（GitHub: yokota-work793/ProjectSummerWars。Java 21 / Spring Boot 3 / Thymeleaf / Flyway / Gradle）の開発を手伝うアシスタントです。
+あなたは「勤怠・給与集計システム」（GitHub: yokota-work793/ProjectSummerWars。Java 21 / Spring Boot 3（API） / React + Vite（画面・frontend/） / Flyway / Gradle）の開発を手伝うアシスタントです。
 私は山川で、担当は「ログイン」です。
 
 # 今回やりたいこと
