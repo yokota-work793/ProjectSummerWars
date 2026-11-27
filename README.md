@@ -31,7 +31,7 @@ ProjectSummerWars/
 │  ├─ src/api.js ・・・・・・・ Java の API を呼ぶ窓口
 │  ├─ src/Layout.jsx ・・・・ 左メニュー・お知らせ表示
 │  ├─ src/app.css ・・・・・・ 見た目
-│  └─ vite.config.js ・・・・ 画面は 5123、/api は 5124 の Java へ
+│  └─ vite.config.js ・・・・ 画面は 5123、/api は 5124 の Java へ中継（つながりは下の「5123 と 5124 のつながり」）
 └─ src/
    ├─ main/java/app/kintai/
    │  ├─ KintaiApplication.java ・・ 起動クラス（全員・触らない）
@@ -154,6 +154,64 @@ npm run dev
 2. ターミナル1で `git pull` → `bash gradlew bootRun`、ターミナル2で `cd frontend && npm install && npm run dev`
 3. 「ポート」タブの 5123 を開く
 4. 終わったら `Ctrl + C`、Codespace も停止（止めないと無料枠が減る）
+
+## 5123 と 5124 のつながり
+```
+ブラウザ ──> http://localhost:5123（React の画面・npm run dev）
+                 │  画面が /api/... を呼ぶと
+                 ▼  自動で中継（frontend/vite.config.js の proxy）
+             http://localhost:5124（Java の API・bootRun / Eclipse）── DB（data/ フォルダ）
+```
+- ブラウザで開くのは **5123 だけ**。5124 は開かなくてよいが、**起動はしておく**（止まっていると画面に「エラーが起きました」と出る）
+- 中継の設定は `frontend/vite.config.js`（指輪）、Java のポートは `application.yml` の `server.port`（全員）。どちらかを変えたら、もう片方も合わせる
+- ログインの状態（Cookie）は 5123 のまま保たれるので、画面から見ると1つのサイトに見える
+- 本番では `npm run build` で React を Java の中に入れるので、Java 1つ（ポート1つ）で動く
+
+## 最新に更新する（毎朝・作業の前）
+1. Java と React を両方 `Ctrl + C` で止める（Eclipse なら赤い四角の停止ボタン）
+2. ルートで `git pull`
+3. 変わったものに合わせて：
+   | 変わったもの | やること |
+   |---|---|
+   | `frontend/package.json` | `cd frontend` → `npm install` |
+   | `build.gradle` | Eclipse：プロジェクトを右クリック →「Gradle」→「Gradle プロジェクトのリフレッシュ」（ターミナルなら何もしなくてよい） |
+   | `db/migration/` に新しい V〇 | 何もしなくてよい（起動したとき自動で表が変わる）。起動でエラーなら Java を止めて `data` フォルダを消して起動し直す（自分のPCの登録データは消える） |
+   | それ以外 | 何もしなくてよい |
+4. Java → React の順に起動し直す
+- だれが何を変えたかは GitHub のコミットメッセージ（先頭の【〇〇担当】）で見る
+
+## 変えたものを反映する（画面に出す）
+| 変えたもの | 反映のしかた |
+|---|---|
+| React（`frontend/src/...`） | 保存するだけ。ブラウザが自動で変わる |
+| Java（`src/main/java/...`） | Java を止めて起動し直す → ブラウザを再読み込み（F5） |
+| `application.yml` | Java を起動し直す |
+| `db/migration/` | Java を起動し直す（必要なら `data` フォルダを消す） |
+| `vite.config.js`・`package.json` | React（`npm run dev`）を起動し直す |
+- 反映できたら、テスト（`.\gradlew test` か Eclipse の JUnit）を通してから commit・push する
+
+## Eclipse で開く（Java 担当向け）
+React（`frontend/`）は Eclipse ではなく **VS Code** で触るのがおすすめ。Eclipse は Java（API）用に使う。
+
+### 最初の1回だけ
+1. Eclipse は「Eclipse IDE for Enterprise Java and Web Developers」（2024-03 以降）を使う。Java 21 が入っていること（上の「最初の1回だけ」）
+2. 「ウィンドウ」→「設定」→「Java」→「インストール済みの JRE」で、Temurin 21（`C:\Program Files\Eclipse Adoptium\jdk-21...`）を追加してチェック
+3. 「ファイル」→「インポート」→「Gradle」→「既存の Gradle プロジェクト」→ ルートの `ProjectSummerWars` フォルダを選ぶ →「完了」
+   - 下の「Gradle 配布」は「Gradle ラッパー」のままでよい（gradlew と同じものを使う）
+   - Eclipse が作る `.project`・`.classpath`・`.settings/`・`bin/` は Git に入れない（.gitignore 済み）
+4. ターミナルで `cd frontend` → `npm install`（React の部品）
+
+### 毎回
+1. 作業前に `git pull`（Eclipse の Git でもターミナルでもよい）。build.gradle が変わったら Gradle のリフレッシュ
+2. `src/main/java/app/kintai/KintaiApplication.java` を右クリック →「実行」→「Java アプリケーション」（Spring Tools を入れていれば「Spring Boot App」）
+   - コンソールに `Started KintaiApplication` と出たら 5124 で起動済み
+   - 2回目からは上の緑の実行ボタンでよい
+3. ターミナル（Eclipse の「ターミナル」ビューか PowerShell）で `cd frontend` → `npm run dev`
+4. ブラウザで http://localhost:5123（`demo` / `1111`）
+5. Java を直したら：赤い四角で止める → 緑の実行ボタン → ブラウザを F5
+6. テスト：`src/test/java` を右クリック →「実行」→「JUnit テスト」（1つだけならそのテストファイルを右クリック）
+- 止めずにもう1回起動すると「Port 5124 was already in use」と出る。コンソールの赤い四角で古い方を止めてから起動する
+- デバッグしたいときは「実行」の代わりに「デバッグ」→ 行番号の左をダブルクリックで止める場所を置き、画面を操作すると止まる
 
 ## Git の使い方（ぶつからないように）
 1. 作業を始める前に `git pull`
