@@ -19,9 +19,9 @@ URL やメールアドレスをコードに書かず、画面から変えられ�
 
 ## 作業のしかた（画面が React になってから）
 - 画面は `frontend/`（React・指輪）にある。このフォルダは「設定」の Java 側（API）で、画面の HTML はもう Java にはない（Thymeleaf は廃止）
-- 動かす：Java（5124）を Eclipse（KintaiApplication を「実行」）か `.\gradlew bootRun` で起動 → 別のターミナルで `cd frontend` → `npm run dev` → ブラウザで http://localhost:5123（`demo` / `1111`）
+- 動かす：ターミナル1で `cd ~\ProjectSummerWars` → `git pull` → `.\gradlew bootRun`（Eclipse なら KintaiApplication を「実行」）、ターミナル2で `cd ~\ProjectSummerWars\frontend` → `npm install` → `npm run dev` → ブラウザで http://localhost:5123（`demo` / `1111`）。`80% EXECUTING` で止まって見えれば起動成功
 - Java を変えたら：Java を止めて起動し直す → ブラウザを F5。テストは Eclipse でテストファイルを右クリック →「JUnit テスト」か `.\gradlew test`
-- 作業前に `git pull`。手順の詳細（Eclipse のつなげ方・更新のしかた）はルートの README.md
+- 手順の詳細・エラーが出たとき・Eclipse はルートの README.md
 - 画面は frontend/src/pages/Settings.jsx（指輪）。設定の項目を足すときは、AppSettings（Java）と Settings.jsx（React）の両方を直す
 
 ## AIへの指示プロンプト（コピーして使う）
