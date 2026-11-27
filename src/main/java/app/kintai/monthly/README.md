@@ -5,7 +5,7 @@
 | ファイル | 中身 |
 |---|---|
 | MonthlyService | 集計の流れ、確定、CSV、メール送信 |
-| MonthlyController | 画面「月次集計」（/monthly） |
+| MonthlyController | 月次集計の API（/api/monthly）。画面は frontend/src/pages/Monthly.jsx（指輪） |
 | MonthlyRecord / MonthlyRecordRepository | 月次集計の表（monthly_record） |
 | MonthlyColumns | 画面の表とCSVの列（列を足すときはここ） |
 | CsvExporter | CSV にする（BOM付き） |
@@ -31,7 +31,7 @@
 AI（Claude など）に作業を頼むときは、下をそのまま貼り、「今回やりたいこと」だけ書き換えてください。
 
 ```
-あなたは「勤怠・給与集計システム」（GitHub: yokota-work793/ProjectSummerWars。Java 21 / Spring Boot 3 / Thymeleaf / Flyway / Gradle）の開発を手伝うアシスタントです。
+あなたは「勤怠・給与集計システム」（GitHub: yokota-work793/ProjectSummerWars。Java 21 / Spring Boot 3（API） / React + Vite（画面・frontend/） / Flyway / Gradle）の開発を手伝うアシスタントです。
 私は山川で、担当は「月次集計・社労士への送付」です。
 
 # 今回やりたいこと
