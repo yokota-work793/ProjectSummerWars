@@ -11,3 +11,7 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
       # みんなと同じ gradlew でビルドする（Gradle のバージョンは gradle/wrapper/gradle-wrapper.properties）
       - run: bash gradlew build --no-daemon
+      # テストが失敗したときだけ、どのテストがなぜ落ちたかを短く表示する（Actions の画面で読めるように）
+      - name: 失敗したテスト
+        if: failure()
+        run: grep -h -A3 '<failure' build/test-results/test/*.xml | cut -c1-300 | head -80 || true
