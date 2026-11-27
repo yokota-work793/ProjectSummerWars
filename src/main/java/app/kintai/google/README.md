@@ -23,9 +23,9 @@
 
 ## 作業のしかた（画面が React になってから）
 - 画面は `frontend/`（React・指輪）にある。このフォルダは Java 側で、画面の HTML はもう Java にはない（Thymeleaf は廃止）
-- 動かす：Java（5124）を Eclipse（KintaiApplication を「実行」）か `.\gradlew bootRun` で起動 → 別のターミナルで `cd frontend` → `npm run dev` → ブラウザで http://localhost:5123（`demo` / `1111`）
+- 動かす：ターミナル1で `cd ~\ProjectSummerWars` → `git pull` → `.\gradlew bootRun`（Eclipse なら KintaiApplication を「実行」）、ターミナル2で `cd ~\ProjectSummerWars\frontend` → `npm install` → `npm run dev` → ブラウザで http://localhost:5123（`demo` / `1111`）。`80% EXECUTING` で止まって見えれば起動成功
 - Java を変えたら：Java を止めて起動し直す → ブラウザを F5。テストは Eclipse でテストファイルを右クリック →「JUnit テスト」か `.\gradlew test`
-- 作業前に `git pull`。手順の詳細（Eclipse のつなげ方・更新のしかた）はルートの README.md
+- 手順の詳細・エラーが出たとき・Eclipse はルートの README.md
 - 鍵（GOOGLE_CREDENTIALS）が無いと FakeGoogleWorkspace（仮データ）で動き、画面の月次集計に黄色い「仮データで動いています」が出る
 - 本物で試すときは、環境変数 GOOGLE_CREDENTIALS を設定してから Java を起動する（Eclipse は「実行構成」→「環境」タブで設定）。鍵ファイルは Git に入れない
 
