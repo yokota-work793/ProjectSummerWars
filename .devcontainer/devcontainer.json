@@ -3,8 +3,9 @@
   "name": "kintai (Java 21)",
   "image": "mcr.microsoft.com/devcontainers/java:1-21",
   "features": {
+    "ghcr.io/devcontainers/features/node:1": { "version": "20" },
     "ghcr.io/devcontainers/features/java:1": { "version": "none", "installGradle": "true", "gradleVersion": "8.10.2" }
   },
-  "forwardPorts": [5123],
+  "forwardPorts": [5123, 5124],
   "customizations": { "vscode": { "extensions": ["vscjava.vscode-java-pack", "vmware.vscode-spring-boot"] } }
 }
