@@ -17,6 +17,13 @@ URL やメールアドレスをコードに書かず、画面から変えられ�
 - このフォルダのファイルを変えたら、対応するテストも足す
 - 他の人の担当フォルダを変えたいときは、自分で直さずに担当者へ伝える（Issue か Pull Request に名前を書く）
 
+## 作業のしかた（画面が React になってから）
+- 画面は `frontend/`（React・指輪）にある。このフォルダは「設定」の Java 側（API）で、画面の HTML はもう Java にはない（Thymeleaf は廃止）
+- 動かす：Java（5124）を Eclipse（KintaiApplication を「実行」）か `.\gradlew bootRun` で起動 → 別のターミナルで `cd frontend` → `npm run dev` → ブラウザで http://localhost:5123（`demo` / `1111`）
+- Java を変えたら：Java を止めて起動し直す → ブラウザを F5。テストは Eclipse でテストファイルを右クリック →「JUnit テスト」か `.\gradlew test`
+- 作業前に `git pull`。手順の詳細（Eclipse のつなげ方・更新のしかた）はルートの README.md
+- 画面は frontend/src/pages/Settings.jsx（指輪）。設定の項目を足すときは、AppSettings（Java）と Settings.jsx（React）の両方を直す
+
 ## AIへの指示プロンプト（コピーして使う）
 AI（Claude など）に作業を頼むときは、下をそのまま貼り、「今回やりたいこと」だけ書き換えてください。
 
