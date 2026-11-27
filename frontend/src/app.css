@@ -66,3 +66,20 @@ label small { font-size: 12px; color: #5A6170; }
 .center { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
 .side-user { color: #C9D3E6; font-size: 12px; padding: 0 10px; }
 a.btn, a.btn-outline, a.btn-sub { text-align: center; }
+/* 月次集計：申請・取込状況 */
+.tag.bad { background: #FDE8E8; color: #9B1C1C; }
+.info { background: #EAF1FB; border: 1px solid #BCD3F2; color: #1D3F73; border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; font-size: 13px; }
+.summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; }
+.summary-card { text-align: left; background: #fff; border: 1px solid #E1E5EB; border-left-width: 5px; border-radius: 10px; padding: 14px 16px; cursor: pointer; font-family: inherit; color: inherit; }
+.summary-card:hover { box-shadow: 0 2px 8px rgba(31, 42, 61, .08); }
+.summary-card.ok { border-left-color: #2E8B57; } .summary-card.warn { border-left-color: #D9A21B; } .summary-card.bad { border-left-color: #D64545; }
+.summary-card.on { outline: 2px solid #2463EB; }
+.summary-title { font-size: 13px; color: #4A5160; }
+.summary-num { font-size: 26px; font-weight: 700; margin: 4px 0; } .summary-num small { font-size: 12px; font-weight: 400; color: #6B7280; }
+.summary-sub { font-size: 12px; color: #6B7280; }
+.table.monthly td, .table.monthly th { border-right: 1px solid #EEF0F3; }
+.table.monthly .stick { position: sticky; background: #fff; z-index: 1; }
+.table.monthly th.stick { background: #F7F8FA; z-index: 2; }
+.table.monthly .s1 { left: 0; min-width: 90px; } .table.monthly .s2 { left: 90px; min-width: 110px; box-shadow: 2px 0 0 #E1E5EB; }
+.table.monthly tr.row-issue td { background: #FFF8EC; }
+.table.monthly tr.row-issue td.s1 { box-shadow: inset 4px 0 0 #D64545; }
