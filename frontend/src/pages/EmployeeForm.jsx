@@ -118,7 +118,7 @@ export default function EmployeeForm({ isNew = false }) {
           <label>メールアドレス <span className="req">*</span><input type="email" value={form.mail || ''} onChange={set('mail')} placeholder="hanako@example.com" className={bad('mail')} />{err('mail')}</label>
           <label>所属<input value={form.dept || ''} onChange={set('dept')} placeholder="開発部" /></label>
           <label>雇用形態<select value={form.type} onChange={set('type')}>{['正社員', '契約社員', 'パート・アルバイト'].map((t) => <option key={t}>{t}</option>)}</select></label>
-          <label>入社日 <span className="req">*</span><input type="date" value={form.joined || ''} onChange={set('joined')} className={bad('joined')} />{err('joined')}</label>
+          <label>入社日 <span className="req">*</span><input type="date" min="1900-01-01" max="9999-12-31" value={form.joined || ''} onChange={set('joined')} className={bad('joined')} />{err('joined')}</label>
           {!isNew && <label>在籍<select value={form.status} onChange={set('status')}>{['在籍', '休職'].map((s) => <option key={s}>{s}</option>)}</select></label>}
         </div>
 
@@ -163,8 +163,8 @@ export default function EmployeeForm({ isNew = false }) {
                 <tr key={i}>
                   <td><input value={h.project || ''} onChange={setRow(i, 'project')} placeholder="案件名" /></td>
                   <td><input inputMode="numeric" value={h.amount ?? ''} onChange={setRow(i, 'amount')} className={bad(`history[${i}].amount`)} /></td>
-                  <td><input type="date" value={h.from || ''} onChange={setRow(i, 'from')} /></td>
-                  <td><input type="date" value={h.to || ''} onChange={setRow(i, 'to')} /></td>
+                  <td><input type="date" min="1900-01-01" max="9999-12-31" value={h.from || ''} onChange={setRow(i, 'from')} /></td>
+                  <td><input type="date" min="1900-01-01" max="9999-12-31" value={h.to || ''} onChange={setRow(i, 'to')} /></td>
                   <td><button type="button" className="link" onClick={() => removeRow(i)}>削除</button></td>
                 </tr>
               ))}
