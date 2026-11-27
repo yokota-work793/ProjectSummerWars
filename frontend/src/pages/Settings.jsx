@@ -55,16 +55,9 @@ export default function Settings() {
         <p className="muted">回答シートには「社員番号」「利用日（日付）」「金額」の質問の列と、山本さんがチェックする「承認」列が必要です（承認の列はシートに自分で足します）。</p>
         <h2 className="section">社労士</h2>
         <div className="card pad grid">
-          {field('MAIL_TO', '社労士のメールアドレス', '月次集計のCSVを送る先', 'email')}
+          {field('MAIL_TO', '社労士のメールアドレス', '明細および月次集計のCSVを送る先', 'email')}
         </div>
         <div style={{ marginTop: 18 }}><button className="btn" disabled={busy}>保存</button></div>
-      </form>
-
-      <h2 className="section">GAS 版からの切り替え（1回だけ）</h2>
-      <form className="card pad" onSubmit={importGas}>
-        <label>GAS 版の「社員管理表」のURL<input value={sheetUrl} onChange={(e) => setSheetUrl(e.target.value)} placeholder="https://docs.google.com/spreadsheets/d/…" />
-          <small>「社員一覧」「参画履歴」シートを読み、勤怠シート・フォルダ・共有状態をそのまま引き継ぎます。サービスアカウントに閲覧以上で共有してください</small></label>
-        <div style={{ marginTop: 12 }}><button className="btn-outline" disabled={busy}>社員を取り込む</button></div>
       </form>
     </>
   )
