@@ -83,3 +83,16 @@ a.btn, a.btn-outline, a.btn-sub { text-align: center; }
 .table.monthly .s1 { left: 0; min-width: 90px; } .table.monthly .s2 { left: 90px; min-width: 110px; box-shadow: 2px 0 0 #E1E5EB; }
 .table.monthly tr.row-issue td { background: #FFF8EC; }
 .table.monthly tr.row-issue td.s1 { box-shadow: inset 4px 0 0 #D64545; }
+/* 月次集計：年月をカレンダーで選ぶ */
+.mp { position: relative; display: flex; gap: 6px; align-items: center; }
+.mp-arrow { padding-left: 12px; padding-right: 12px; }
+.mp-label { min-width: 150px; font-weight: 600; }
+.mp-pop { position: absolute; right: 0; top: calc(100% + 6px); z-index: 20; width: 260px; background: #fff; border: 1px solid #E1E5EB; border-radius: 10px; box-shadow: 0 8px 24px rgba(31, 42, 61, .15); padding: 12px; }
+.mp-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.mp-head .link { font-size: 20px; padding: 0 10px; }
+.mp-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.mp-m { border: 1px solid #E1E5EB; background: #fff; border-radius: 6px; padding: 8px 0; cursor: pointer; font-family: inherit; font-size: 13px; }
+.mp-m:hover { background: #EAF1FB; }
+.mp-m.now { border-color: #2463EB; }
+.mp-m.on { background: #2463EB; border-color: #2463EB; color: #fff; }
+.mp-now { margin-top: 10px; font-size: 12px; }
